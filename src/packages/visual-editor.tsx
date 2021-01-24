@@ -1,13 +1,16 @@
+import component from '*.vue';
 import {computed, defineComponent, PropType} from 'vue';
 import { useModel } from './utils/useModel';
 import { VisualEditorBlock } from './visual-editor-block';
 import "./visual-editor.scss"
-import { VisualEditorModelValue } from './visual-editor.utils';
+import { VisualEditorConfig, VisualEditorModelValue } from './visual-editor.utils';
 
 
 export const VisualEditor = defineComponent({
     props:{
-        modelValue: { type: Object as PropType<VisualEditorModelValue>,required:true}
+        modelValue: { type: Object as PropType<VisualEditorModelValue>,required:true},
+        config: { type: Object as PropType<VisualEditorConfig>,required:true}
+
     },
     emits:{
         'update:modelValue': (val?: VisualEditorModelValue) => true,
@@ -19,10 +22,16 @@ export const VisualEditor = defineComponent({
             width:`${dataModel.value.container.width}px`,
             height: `${dataModel.value.container.height}px`,
         }));
+        console.log(props.config);
         return ()=>(
             <div class="visual-editor">
                 <div class="visual-editor-menu">
-                    visual-editor-menu
+                    {props.config.componentList.map(component => <div class="visual-editor-menu-item">
+                        <span class="visual-editor-menu-item-label">{component.label}</span>
+                        <div class="visual-editor-menu-item-content">
+                            {component.preview()}
+                        </div>
+                    </div>)}
                 </div>
                 <div class="visual-editor-head">
                     visual-editor-head
