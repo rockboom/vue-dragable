@@ -34,7 +34,11 @@ export const VisualEditor = defineComponent({
                 /** 组件在容器中放置时，通过事件对象的offsetX 和 offsetY 添加一条组件数据*/
                 drop: (e: DragEvent) => {
                     const blocks = dataModel.value.blocks || [];
-                    blocks.push({ top: e.offsetY, left: e.offsetX })
+                    blocks.push({ 
+                        top: e.offsetY, 
+                        left: e.offsetX,
+                        componentKey:component!.key 
+                    })
                     dataModel.value = { ...dataModel.value, blocks };
                 },
             }
@@ -90,7 +94,7 @@ export const VisualEditor = defineComponent({
                         <div class="visual-editor-container" style={containerStyle.value} ref={containerRef}>
                             {!!dataModel.value.blocks && (
                                 dataModel.value.blocks.map((block, index) => (
-                                    <VisualEditorBlock block={block} key={index} />
+                                    <VisualEditorBlock config={props.config} block={block} key={index} />
                                 ))
                             )}
                         </div>
