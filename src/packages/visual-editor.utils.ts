@@ -2,7 +2,8 @@ export interface VisualEditorBlockData {
     componentKey: string;               // 映射VisualEditorConfig 中 componentMap 的对象
     top: number;                        // 组件的top定位
     left: number;                       // 组件的left定位
-    adjustPosition: boolean;           // 是否需要调整位置
+    adjustPosition: boolean;            // 是否需要调整位置
+    focus: boolean;                     // 是否是选中状态
 }
 export interface VisualEditorModelValue {
     container: {
@@ -17,6 +18,24 @@ export interface VisualEditorComponent {
     label: string;
     preview: () => JSX.Element;
     render: () => JSX.Element;
+}
+
+export function createNewBlock({
+    component,
+    left,
+    top
+}: {
+    component: VisualEditorComponent;
+    top: number;
+    left: number;
+}): VisualEditorBlockData {
+    return {
+        top,
+        left,
+        componentKey: component!.key,
+        adjustPosition: true,
+        focus: false
+    }
 }
 
 export function createVisualEditorConfig() {
