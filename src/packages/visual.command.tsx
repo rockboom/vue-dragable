@@ -16,6 +16,10 @@ export function useVisualCommand({
     dragend: { on: (cb: () => void) => void; off: (cb: () => void) => void };
 }) {
     const commander = useCommander();
+
+    /**
+     * 删除命令
+     */
     commander.registry({
         name: 'delete',
         keyboard: [
@@ -26,21 +30,27 @@ export function useVisualCommand({
         execute: () => {
             // console.log("执行删除命令");
             const data = {
-                before: dataModel.value.blocks || [],
-                after: focusData.value.unFocus
+                before: dataModel.value.blocks || [], // 先存一份执行之前的数据
+                after: focusData.value.unFocus          // 执行之后的数据
             }
             return {
                 redo: () => {
                     // console.log("重做删除命令", data.after);
-                    updateBlocks(data.after);
+                    updateBlocks(deepcopy(data.after));
                 },
                 undo: () => {
                     // console.log("撤回删除命令");
-                    updateBlocks(data.before);
+                    updateBlocks(deepcopy(data.before));
                 }
             }
         }
     });
+
+    /**
+     * 拖拽命令，适用三种情况
+     * - 从菜单拖拽组件到容器画布
+     * - 从容器中拖拽调整组件位置
+     */
     commander.registry({
         name: 'drag',
         init(){
