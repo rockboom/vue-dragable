@@ -44,10 +44,7 @@ export function useVisualCommand({
     commander.registry({
         name: 'drag',
         init(){
-            this.data = {
-                before:null as null | VisualEditorBlockData[],
-                after:null  as null | VisualEditorBlockData[]
-            }
+            this.data = {before:null as null | VisualEditorBlockData[]}
             const handler = {
                 dragstart: () => {
                     this.data.before = deepcopy(dataModel.value.blocks || []);
@@ -64,14 +61,15 @@ export function useVisualCommand({
             }
         },
         execute(){
-            let before = deepcopy(this.data.before);
+            let before = this.data.before;
             let after = deepcopy(dataModel.value.blocks || []);
+
             return {
                 redo: () => { 
-                    updateBlocks(after);
+                    updateBlocks(deepcopy(after));
                 },
                 undo: () => { 
-                    updateBlocks(before);
+                    updateBlocks(deepcopy(before));
                 },
             }
         }

@@ -157,12 +157,17 @@ export const VisualEditor = defineComponent({
             let dragState = {
                 startX: 0,
                 startY: 0,
-                startPos: [] as { left: number; top: number }[]
+                startPos: [] as { left: number; top: number }[],
+                dragging:false
             }
 
             const mousemove = (e: MouseEvent) => {
                 const durX = e.clientX - dragState.startX;
                 const durY = e.clientY - dragState.startY;
+                if(!dragState.dragging){
+                    dragState.dragging = true;
+                    dragstart.emit();
+                }
                 focusData.value.focus.forEach((block, index) => {
                     block.top = dragState.startPos[index].top + durY;
                     block.left = dragState.startPos[index].left + durX;
@@ -171,13 +176,17 @@ export const VisualEditor = defineComponent({
             const mouseup = (e: MouseEvent) => {
                 document.removeEventListener('mousemove', mousemove);
                 document.removeEventListener('mouseup', mouseup);
+                if(dragState.dragging){
+                    dragend.emit();
+                }
             }
 
             const mousedown = (e: MouseEvent) => {
                 dragState = {
                     startX: e.clientX,
                     startY: e.clientY,
-                    startPos: focusData.value.focus.map(({ top, left }) => ({ top, left }))
+                    startPos: focusData.value.focus.map(({ top, left }) => ({ top, left })),
+                    dragging:false
                 }
                 document.addEventListener('mousemove', mousemove);
                 document.addEventListener('mouseup', mouseup);
