@@ -21,9 +21,9 @@ export function useCommander() {
 
     const registry = (command: Command) => {
         state.commands[command.name] = (...args) => {
-            const {undo,redo} =  command.execute(...args);
-            if(command.followQueue){
-                state.queue.push({undo,redo});
+            const { undo, redo } = command.execute(...args);
+            if (command.followQueue !== false) {
+                state.queue.push({ undo, redo });
                 state.current += 1;
             }
             redo();
@@ -39,30 +39,32 @@ export function useCommander() {
             return {
                 redo: () => {
                     // 重新做一遍要做的事情
-                    const {current} = state;
-                    if(current === -1) return;
-                    const {undo} = state.queue[current];
-                    !!undo && undo();
-                    state.current -= 1; 
+                    if(state.current === -1) return;
+                    const queueItem = state.queue[state.current];
+                    if(!!queueItem){
+                        !!queueItem.undo && queueItem.undo();
+                        state.current--;
+                    }
                 }
             }
         }
     })
     registry({
-        name:'redo',
-        keyboard:[
+        name: 'redo',
+        keyboard: [
             'ctrl+y',
             'cmd+shift+z'
         ],
-        followQueue:false,
-        execute:()=>{
+        followQueue: false,
+        execute: () => {
             return {
-                redo:()=>{
-                    const {current} = state;
-                    if(!state.queue[current]) return;
-                    const {redo} = state.queue[current];
-                    redo();
-                    state.current += 1;
+                redo: () => {
+                    console.log("执行重做命令");
+                    const queueItem = state.queue[state.current + 1];
+                    if(!!queueItem){
+                        queueItem.redo();
+                        state.current++;
+                    }
                 }
             }
         }
