@@ -1,4 +1,5 @@
 import { computed, defineComponent, PropType, ref } from 'vue';
+import { createEvent } from './plugins/event';
 import { useModel } from './utils/useModel';
 import { VisualEditorBlock } from './visual-editor-block';
 import "./visual-editor.scss"
@@ -38,6 +39,17 @@ export const VisualEditor = defineComponent({
             }
         })
 
+        const dragstart = createEvent();
+        const dragend = createEvent();
+        dragstart.on(()=>{
+            console.log("listen drag start");
+            
+        })
+        dragend.on(() => {
+            console.log("listen end start");
+
+        })
+
         /* 对外暴露的一些方法 */
         const methods = {
             clearFocus: (block?: VisualEditorBlockData) => {
@@ -50,7 +62,6 @@ export const VisualEditor = defineComponent({
             },
             updateBlocks: (blocks: VisualEditorBlockData[]) => {
                 dataModel.value = {...dataModel.value, blocks};
-                console.log("updateBlocks", dataModel.value);
             }
         }
 
@@ -73,6 +84,7 @@ export const VisualEditor = defineComponent({
                         left: e.offsetX
                     }));
                     methods.updateBlocks(blocks);
+                    dragend.emit();
                 },
             }
             const blockHandler = {
@@ -87,6 +99,7 @@ export const VisualEditor = defineComponent({
                     containerRef.value.addEventListener('dragleave', containerHandler.dragleave);
                     containerRef.value.addEventListener('drop', containerHandler.drop);
                     component = current;
+                    dragstart.emit();
                 },
                 /**
                  * 处理拖拽菜单组件的结束动作
@@ -174,7 +187,9 @@ export const VisualEditor = defineComponent({
         const commander = useVisualCommand({
             focusData,
             updateBlocks: methods.updateBlocks,
-            dataModel
+            dataModel,
+            dragstart,
+            dragend
         });
         const buttons = [
             { label: '撤销', icon: 'icon-back', handler: commander.undo, tip: 'cmd+z' },
