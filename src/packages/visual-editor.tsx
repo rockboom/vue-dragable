@@ -42,11 +42,11 @@ export const VisualEditor = defineComponent({
         const dragstart = createEvent();
         const dragend = createEvent();
         dragstart.on(()=>{
-            console.log("listen drag start");
-            
+            // console.log("listen drag start");
+
         })
         dragend.on(() => {
-            console.log("listen end start");
+            // console.log("listen end start");
 
         })
 

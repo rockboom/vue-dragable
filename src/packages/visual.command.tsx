@@ -24,18 +24,18 @@ export function useVisualCommand({
             'cmd+d'
         ],
         execute: () => {
-            console.log("执行删除命令");
+            // console.log("执行删除命令");
             const data = {
                 before: dataModel.value.blocks || [],
                 after: focusData.value.unFocus
             }
             return {
                 redo: () => {
-                    console.log("重做删除命令", data.after);
+                    // console.log("重做删除命令", data.after);
                     updateBlocks(data.after);
                 },
                 undo: () => {
-                    console.log("撤回删除命令");
+                    // console.log("撤回删除命令");
                     updateBlocks(data.before);
                 }
             }

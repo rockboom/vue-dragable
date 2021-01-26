@@ -42,7 +42,7 @@ export function useCommander() {
     }
     const init = () => {
         const onKeydown = (e: KeyboardEvent) => {
-            console.log("监听到键盘事件");
+            // console.log("监听到键盘事件");
 
         }
         window.addEventListener('keydown', onKeydown);
@@ -81,7 +81,7 @@ export function useCommander() {
         execute: () => {
             return {
                 redo: () => {
-                    console.log("执行重做命令");
+                    // console.log("执行重做命令");
                     const queueItem = state.queue[state.current + 1];
                     if (!!queueItem) {
                         queueItem.redo();
