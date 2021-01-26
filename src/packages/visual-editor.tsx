@@ -1,8 +1,10 @@
 import { computed, defineComponent, PropType, ref } from 'vue';
+import { useCommander } from './plugins/command.plugin';
 import { useModel } from './utils/useModel';
 import { VisualEditorBlock } from './visual-editor-block';
 import "./visual-editor.scss"
 import { createNewBlock, VisualEditorBlockData, VisualEditorComponent, VisualEditorConfig, VisualEditorModelValue } from './visual-editor.utils';
+import { useVisualCommand } from './visual.command';
 
 
 export const VisualEditor = defineComponent({
@@ -116,14 +118,14 @@ export const VisualEditor = defineComponent({
                         e.preventDefault();
                         if (e.shiftKey) {
                             /* 按住了shift键，如果此时没有选中的block，就选中这个block，否则就令这个block的选中状态取反 */
-                            if(focusData.value.focus.length  <= 1){
+                            if (focusData.value.focus.length <= 1) {
                                 block.focus = true;
-                            }else{
+                            } else {
                                 block.focus = !block.focus;
                             }
                         } else {
                             /* 如果点击的这个block没有被选中，才清空其他被选中的block，否则不做任何处理。防止拖动多个block，取消其他block的选中状态 */
-                            if(!block.focus){
+                            if (!block.focus) {
                                 block.focus = true;
                                 methods.clearFocus(block);
                             }
@@ -166,6 +168,12 @@ export const VisualEditor = defineComponent({
             }
             return { mousedown };
         })();
+        const commander = useVisualCommand();
+        const buttons = [
+            { label: '撤销', icon: 'icon-back', handler: commander.undo, tip: 'cmd+z' },
+            { label: '重做', icon: 'icon-forward', handler: commander.redo, tip: 'cmd+shift+z' },
+            { label: '删除', icon: 'icon-delete', handler: () => { commander.delete() }, tip: 'cmd+d,backspace,delete' },
+        ]
 
         return () => (
             <div class="visual-editor">
@@ -182,7 +190,12 @@ export const VisualEditor = defineComponent({
                         </div>))}
                 </div>
                 <div class="visual-editor-head">
-                    visual-editor-head
+                    {
+                        buttons.map((btn, index) => <div key={index} class="visual-editor-head-button">
+                            <i class={`iconfont ${btn.icon}`}></i>
+                            <span>{btn.label}</span>
+                        </div>)
+                    }
                 </div>
                 <div class="visual-editor-operator">
                     visual-editor-operator
