@@ -66,13 +66,13 @@ export const VisualEditor = defineComponent({
                 dragleave: (e: DragEvent) => { e.dataTransfer!.dropEffect = 'none'; },
                 /** 组件在容器中放置时，通过事件对象的offsetX 和 offsetY 添加一条组件数据*/
                 drop: (e: DragEvent) => {
-                    const blocks = dataModel.value.blocks || [];
+                    const blocks = [...dataModel.value.blocks || []];
                     blocks.push(createNewBlock({
                         component: component!,
                         top: e.offsetY,
                         left: e.offsetX
                     }));
-                    dataModel.value = { ...dataModel.value, blocks };
+                    methods.updateBlocks(blocks);
                 },
             }
             const blockHandler = {

@@ -22,11 +22,17 @@ export function useCommander() {
     const registry = (command: Command) => {
         state.commands[command.name] = (...args) => {
             const { undo, redo } = command.execute(...args);
-            if (command.followQueue !== false) {
-                state.queue.push({ undo, redo });
-                state.current += 1;
-            }
             redo();
+            if (command.followQueue === false) {
+                return;
+            }
+            let {queue,current} = state;
+            if(queue.length > 0){
+                queue = queue.slice(0,current+1);   // 当前命令之前的都不要了，只要current后面的
+                state.queue = queue;                
+            }
+            queue.push({undo,redo});
+            state.current = current + 1;
         }
     }
     // 注册撤销事件
