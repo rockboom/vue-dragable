@@ -1,72 +1,127 @@
-import { defineComponent, PropType, reactive } from "vue";
+import { createApp, defineComponent, getCurrentInstance, PropType, reactive } from "vue";
 import { defer } from "./defer";
+import { ElInput, ElDialog, ElButton } from 'element-plus'; // 使用局部组件
 
-enum DialogServiceEditType{
-    textarea='textarea',
-    input='input'
+enum DialogServiceEditType {
+    textarea = 'textarea',
+    input = 'input'
 }
 
-interface DialogServiceOption{
-    editType:DialogServiceEditType,
-    editReadonly?:boolean,
-    editValue?:string|null,
-    onConfirm:(val?:string|null)=>void
+interface DialogServiceOption {
+    title?: string;
+    editType: DialogServiceEditType;
+    editReadonly?: boolean;
+    editValue?: string | null;
+    onConfirm: (val?: string | null) => void;
 }
+
+const keyGenerator = (()=>{
+    let count = 0;
+    return ()=>`auto_key_${count++}`
+})()
 
 const ServiceComponent = defineComponent({
-    props:{
-        option:{
-            type:Object as PropType<DialogServiceOption>,required:true
+    props: {
+        option: {
+            type: Object as PropType<DialogServiceOption>, required: true
         }
     },
-    setup(props){
+    setup(props) {
+        const ctx = getCurrentInstance()!
         const state = reactive({
-            option:props.option,
-            showFlag:false
+            option: props.option,
+            editValue: null as undefined | null | string,
+            showFlag: false,
+            key:keyGenerator()
         })
-        return ()=>(
-            <el-dialog v-model={state.showFlag}>
+        const methods = {
+            service: (option: DialogServiceOption) => {
+                state.option = option;
+                state.editValue = option.editValue;
+                state.key = keyGenerator();
+                methods.show();
+            },
+            show: () => {
+                state.showFlag = true;
+            },
+            hide: () => {
+                state.showFlag = false;
+            }
+        }
+        const handler = {
+            onConfirm: () => {
+                state.option.onConfirm(state.editValue);
+                methods.hide();
+            },
+            onCancel: () => {
+                methods.hide();
+            }
+        }
+        Object.assign(ctx.proxy, methods);
+        return () => (
+            // @ts-ignore
+            <ElDialog v-model={state.showFlag} title={state.option.title} key={state.key}>
                 {{
-                    default:()=>(
+                    default: () => (
                         <div>
                             {
-                                state.option.editType  === DialogServiceEditType.textarea ? 
-                                (
-                                    <el-input type="textarea" row={10}/>
-                                ):(
-                                    <el-input row={10}/>
-                                )
+                                state.option.editType === DialogServiceEditType.textarea ?
+                                    (
+                                        <ElInput type="textarea" {...{ row: 10 }} v-model={state.editValue} />
+                                    ) : (
+                                        <ElInput {...{ row: 10 }} v-model={state.editValue} />
+                                    )
                             }
                         </div>
                     ),
-                    footer:()=>(
+                    footer: () => (
                         <div>
-                            <el-button>取消</el-button>
-                            <el-button>确定</el-button>
+                            <ElButton {...{ onClick: handler.onCancel } as any}>取消</ElButton>
+                            <ElButton {...{ onClick: handler.onConfirm } as any}>确定</ElButton>
                         </div>
                     )
                 }}
-            </el-dialog>
+            </ElDialog>
         )
     }
 });
 
-const DialogService = (option:DialogServiceOption)=>{
+const DialogService = (() => {
+    let ins: any;
+    return (option: DialogServiceOption) => {
+        if (!ins) {
+            const el = document.createElement('div');
+            document.body.appendChild(el);
+            const app = createApp(ServiceComponent, { option });
+            ins = app.mount(el);
+        }
+        ins.service(option);
+    }
+})()
 
-}
-
-export const $$dialog = Object.assign(DialogService,{
-    input:(initValue?:string,option?:DialogServiceOption)=>{
-        const dfd = defer<string|null|undefined>();
-        const opt:DialogServiceOption = option || {editType:DialogServiceEditType.input,onConfirm:dfd.resolve}
+export const $$dialog = Object.assign(DialogService, {
+    input: (initValue?: string, title?: string, option?: Omit<DialogServiceOption, 'editType' | 'onConfirm'>) => {
+        const dfd = defer<string | null | undefined>();
+        const opt: DialogServiceOption = {
+            ...option,
+            editType: DialogServiceEditType.input,
+            onConfirm: dfd.resolve,
+            editValue:initValue,
+            title
+        }
         DialogService(opt);
         return dfd.promise;
     },
-    textarea: (initValue?: string, option?: DialogServiceOption) => {
-        textarea: ()=>{
+    textarea: (initValue?: string, title?: string, option?: Omit<DialogServiceOption,'editType'|'onConfirm'>) => {
         const dfd = defer<string | null | undefined>();
-        const opt: DialogServiceOption = option || { editType: DialogServiceEditType.textarea, onConfirm: dfd.resolve }
+        const opt: DialogServiceOption = {
+            ...option,
+            editType: DialogServiceEditType.textarea,
+            onConfirm: dfd.resolve,
+            editValue: initValue,
+            title
+        }
         DialogService(opt);
         return dfd.promise;
-    }}
+    }
 })
