@@ -121,7 +121,10 @@ export const VisualEditor = defineComponent({
             return {
                 container: {
                     onMousedown: (e: MouseEvent) => {
-                        e.stopPropagation();
+                        /* 此行导致报错：Uncaught TypeError: Cannot read property 'target' of undefined
+                            因为element-ui有代码监听全局点击事件 阻止冒泡 不能获取e.target 报错
+                        */
+                        // e.stopPropagation();
                         e.preventDefault();
 
                         /* 点击空白处，清空所有选中的block */
@@ -223,10 +226,12 @@ export const VisualEditor = defineComponent({
                 <div class="visual-editor-head">
                     {
                         buttons.map((btn, index) => (
-                            <div key={index} class="visual-editor-head-button" onClick={btn.handler}>
-                                <i class={`iconfont ${btn.icon}`}></i>
-                                <span>{btn.label}</span>
-                            </div>
+                            <el-tooltip effect="dark" content={btn.tip} placement="bottom">
+                                <div key={index} class="visual-editor-head-button" onClick={btn.handler}>
+                                    <i class={`iconfont ${btn.icon}`}></i>
+                                    <span>{btn.label}</span>
+                                </div>
+                            </el-tooltip>
                         ))
                     }
                 </div>

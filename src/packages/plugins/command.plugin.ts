@@ -1,4 +1,5 @@
 import { onUnmounted, reactive } from "vue";
+import { keyboardCode } from "./keyboard-code";
 
 export interface CommandExecute {
     undo?: () => void;
@@ -23,6 +24,7 @@ export function useCommander() {
         destroyList: [] as ((() => void) | undefined)[]             // 组件销毁的时候，需要调用
     });
 
+    /* 注册一个命令 */
     const registry = (command: Command) => {
         state.commandArray.push(command);
         state.commands[command.name] = (...args) => {
@@ -46,6 +48,38 @@ export function useCommander() {
         }
     }
 
+    const keyboardEvent = (() => {
+        const onKeydown = (e: KeyboardEvent) => {
+            if (document.activeElement !== document.body) return;
+            const { keyCode, shiftKey, altKey, ctrlKey, metaKey } = e;
+            let keyString: string[] = [];
+            if (ctrlKey || metaKey) keyString.push('ctrl');
+            if (shiftKey) keyString.push('shift');
+            if (altKey) keyString.push('alt');
+            keyString.push(keyboardCode[keyCode]);
+
+            const keyNames = keyString.join('+');
+            state.commandArray.forEach(({keyboard,name})=>{
+                if(!keyboard) return;
+                const keys = Array.isArray(keyboard)? keyboard : [keyboard];
+                if(keys.indexOf(keyNames) > -1){
+                    console.log('当前快捷键：', keyNames);
+                    state.commands[name]();
+
+                    // 下面两行是为了快捷键执行功能时，阻止网页的默认事件
+                    e.stopPropagation();
+                    e.preventDefault();// 阻止ctrl+d收藏网页的默认行为
+                }
+            })
+            
+        }
+        const init = () => {
+            window.addEventListener('keydown', onKeydown);
+            return () => window.removeEventListener('keydown', onKeydown);
+        }
+        return init;
+    })()
+
     /**
      * useCommander初始化函数，负责初始化监听键盘事件、命令的初识话逻辑
      */
@@ -56,6 +90,7 @@ export function useCommander() {
         }
         window.addEventListener('keydown', onKeydown);
         state.commandArray.forEach(command => !!command.init && state.destroyList.push(command.init()));
+        state.destroyList.push(keyboardEvent());
         state.destroyList.push(() => {
             window.removeEventListener('keydown', onKeydown);
         })
@@ -63,7 +98,7 @@ export function useCommander() {
     // 注册撤销命令 (撤回命令的执行结果不需要进队列 ？)
     registry({
         name: 'undo',
-        keyboard: 'cmd+z',
+        keyboard: 'ctrl+z',
         followQueue: false,
         execute: () => {
             // 命令被执行时，要做的事情
@@ -84,7 +119,7 @@ export function useCommander() {
         name: 'redo',
         keyboard: [
             'ctrl+y',
-            'cmd+shift+z'
+            'ctrl+shift+z'
         ],
         followQueue: false,
         execute: () => {
