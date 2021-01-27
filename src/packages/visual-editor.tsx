@@ -122,19 +122,25 @@ export const VisualEditor = defineComponent({
                 container: {
                     onMousedown: (e: MouseEvent) => {
                         /* 此行导致报错：Uncaught TypeError: Cannot read property 'target' of undefined
-                            因为element-ui有代码监听全局点击事件 阻止冒泡 不能获取e.target 报错
+                            因为element-ui有代码在冒泡阶段，监听全局点击事件 阻止冒泡 不能获取e.target 报错
                         */
                         // e.stopPropagation();
                         e.preventDefault();
-
-                        /* 点击空白处，清空所有选中的block */
-                        methods.clearFocus();
+                        // 只处理点击的容器的事件，不处理点击元素的事件 如点击按钮的文本就不处理 只有点击边框才会处理
+                        if(e.currentTarget !== e.target)return;
+                        if(!e.shiftKey){
+                            /* 点击空白处，清空所有选中的block */
+                            methods.clearFocus();
+                        }
                     }
                 },
                 block: {
                     onMousedown: (e: MouseEvent, block: VisualEditorBlockData) => {
-                        e.stopPropagation();
-                        e.preventDefault();
+                        /* 此行导致报错：Uncaught TypeError: Cannot read property 'target' of undefined
+                            因为element-ui有代码在冒泡阶段，监听全局点击事件 阻止冒泡 不能获取e.target 报错
+                        */
+                        // e.stopPropagation();
+                        // e.preventDefault();
                         if (e.shiftKey) {
                             /* 按住了shift键，如果此时没有选中的block，就选中这个block，否则就令这个block的选中状态取反 */
                             if (focusData.value.focus.length <= 1) {

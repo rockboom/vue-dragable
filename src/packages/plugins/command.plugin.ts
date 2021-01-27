@@ -63,7 +63,6 @@ export function useCommander() {
                 if(!keyboard) return;
                 const keys = Array.isArray(keyboard)? keyboard : [keyboard];
                 if(keys.indexOf(keyNames) > -1){
-                    console.log('当前快捷键：', keyNames);
                     state.commands[name]();
 
                     // 下面两行是为了快捷键执行功能时，阻止网页的默认事件
