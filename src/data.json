@@ -1,0 +1,61 @@
+{
+    "container": {
+        "height": 500,
+        "width": 800
+    },
+    "blocks": [
+        {
+            "top": 171,
+            "left": 302,
+            "componentKey": "text",
+            "focus": true,
+            "zIndex":0
+        },
+        {
+            "top": 100,
+            "left": 100,
+            "componentKey": "button",
+            "focus": false,
+            "zIndex": 0
+        },
+        {
+            "top": 253,
+            "left": 301,
+            "componentKey": "input",
+            "focus": false,
+            "zIndex": 0
+        },
+        {
+            "top": 106,
+            "left": 285,
+            "componentKey": "text",
+            "adjustPosition": false,
+            "focus": false,
+            "zIndex": 0
+        },
+        {
+            "top": 171,
+            "left": 480,
+            "componentKey": "button",
+            "adjustPosition": false,
+            "focus": false,
+            "zIndex": 0
+        },
+        {
+            "top": 312,
+            "left": 253,
+            "componentKey": "input",
+            "adjustPosition": false,
+            "focus": false,
+            "zIndex": 0
+        },
+        {
+            "top": 250,
+            "left": 527,
+            "componentKey": "button",
+            "adjustPosition": false,
+            "focus": false,
+            "zIndex": 0
+        }
+    ]
+}
