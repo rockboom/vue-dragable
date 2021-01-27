@@ -54,13 +54,13 @@ export function useVisualCommand({
      */
     commander.registry({
         name: 'drag',
-        init(){
-            this.data = {before:null as null | VisualEditorBlockData[]}
+        init() {
+            this.data = { before: null as null | VisualEditorBlockData[] }
             const handler = {
                 dragstart: () => {
                     this.data.before = deepcopy(dataModel.value.blocks || []);
                 },
-                dragend:()=>{
+                dragend: () => {
                     commander.state.commands.drag();
                 }
             }
@@ -71,17 +71,35 @@ export function useVisualCommand({
                 dragend.off(handler.dragend);
             }
         },
-        execute(){
+        execute() {
             let before = this.data.before;
             let after = deepcopy(dataModel.value.blocks || []);
 
             return {
-                redo: () => { 
+                redo: () => {
                     updateBlocks(deepcopy(after));
                 },
-                undo: () => { 
+                undo: () => {
                     updateBlocks(deepcopy(before));
                 },
+            }
+        }
+    })
+    commander.registry({
+        name: 'clear',
+        execute: () => {
+            let data = {
+                before:deepcopy(dataModel.value.blocks||[]),
+                after:deepcopy([])
+            }
+
+            return {
+                redo: () => {
+                    updateBlocks(deepcopy(data.after))
+                 },
+                undo: () => { 
+                    updateBlocks(deepcopy(data.before));
+                }
             }
         }
     })
@@ -90,6 +108,6 @@ export function useVisualCommand({
         undo: () => commander.state.commands.undo(),
         redo: () => commander.state.commands.redo(),
         delete: () => commander.state.commands.delete(),
-        drag:()=>commander.state.commands.drag()
+        clear: () => commander.state.commands.clear()
     }
 }

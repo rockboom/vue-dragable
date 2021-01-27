@@ -41,7 +41,7 @@ export const VisualEditor = defineComponent({
 
         const dragstart = createEvent();
         const dragend = createEvent();
-        dragstart.on(()=>{
+        dragstart.on(() => {
             // console.log("listen drag start");
 
         })
@@ -61,7 +61,7 @@ export const VisualEditor = defineComponent({
                 blocks.forEach(block => block.focus = false);
             },
             updateBlocks: (blocks: VisualEditorBlockData[]) => {
-                dataModel.value = {...dataModel.value, blocks};
+                dataModel.value = { ...dataModel.value, blocks };
             }
         }
 
@@ -127,8 +127,8 @@ export const VisualEditor = defineComponent({
                         // e.stopPropagation();
                         e.preventDefault();
                         // 只处理点击的容器的事件，不处理点击元素的事件 如点击按钮的文本就不处理 只有点击边框才会处理
-                        if(e.currentTarget !== e.target)return;
-                        if(!e.shiftKey){
+                        if (e.currentTarget !== e.target) return;
+                        if (!e.shiftKey) {
                             /* 点击空白处，清空所有选中的block */
                             methods.clearFocus();
                         }
@@ -167,13 +167,13 @@ export const VisualEditor = defineComponent({
                 startX: 0,
                 startY: 0,
                 startPos: [] as { left: number; top: number }[],
-                dragging:false
+                dragging: false
             }
 
             const mousemove = (e: MouseEvent) => {
                 const durX = e.clientX - dragState.startX;
                 const durY = e.clientY - dragState.startY;
-                if(!dragState.dragging){
+                if (!dragState.dragging) {
                     dragState.dragging = true;
                     dragstart.emit();
                 }
@@ -185,7 +185,7 @@ export const VisualEditor = defineComponent({
             const mouseup = (e: MouseEvent) => {
                 document.removeEventListener('mousemove', mousemove);
                 document.removeEventListener('mouseup', mouseup);
-                if(dragState.dragging){
+                if (dragState.dragging) {
                     dragend.emit();
                 }
             }
@@ -195,7 +195,7 @@ export const VisualEditor = defineComponent({
                     startX: e.clientX,
                     startY: e.clientY,
                     startPos: focusData.value.focus.map(({ top, left }) => ({ top, left })),
-                    dragging:false
+                    dragging: false
                 }
                 document.addEventListener('mousemove', mousemove);
                 document.addEventListener('mouseup', mouseup);
@@ -210,9 +210,10 @@ export const VisualEditor = defineComponent({
             dragend
         });
         const buttons = [
-            { label: '撤销', icon: 'icon-back', handler: commander.undo, tip: 'cmd+z' },
-            { label: '重做', icon: 'icon-forward', handler: commander.redo, tip: 'cmd+shift+z' },
-            { label: '删除', icon: 'icon-delete', handler: () => { commander.delete() }, tip: 'cmd+d,backspace,delete' },
+            { label: '撤销', icon: 'icon-back', handler: commander.undo, tip: 'ctrl+z' },
+            { label: '重做', icon: 'icon-forward', handler: commander.redo, tip: 'ctrl+shift+z' },
+            { label: '删除', icon: 'icon-delete', handler: () => { commander.delete() }, tip: 'ctrl+d,backspace,delete' },
+            { label: '清空', icon: 'icon-reset', handler: () => { commander.clear() } },
         ]
 
         return () => (
@@ -231,14 +232,16 @@ export const VisualEditor = defineComponent({
                 </div>
                 <div class="visual-editor-head">
                     {
-                        buttons.map((btn, index) => (
-                            <el-tooltip effect="dark" content={btn.tip} placement="bottom">
-                                <div key={index} class="visual-editor-head-button" onClick={btn.handler}>
-                                    <i class={`iconfont ${btn.icon}`}></i>
-                                    <span>{btn.label}</span>
-                                </div>
+                        buttons.map((btn, index) => {
+                            const content = (<div key={index} class="visual-editor-head-button" onClick={btn.handler}>
+                                <i class={`iconfont ${btn.icon}`}></i>
+                                <span>{btn.label}</span>
+                            </div>);
+
+                            return !btn.tip ? content : <el-tooltip effect="dark" content={btn.tip} placement="bottom">
+                                {content}
                             </el-tooltip>
-                        ))
+                        })
                     }
                 </div>
                 <div class="visual-editor-operator">
