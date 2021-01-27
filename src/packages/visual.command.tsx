@@ -50,6 +50,7 @@ export function useVisualCommand({
      * 拖拽命令，适用三种情况
      * - 从菜单拖拽组件到容器画布
      * - 从容器中拖拽调整组件位置
+     * - 拖拽调整组件的宽度和高度
      */
     commander.registry({
         name: 'drag',
