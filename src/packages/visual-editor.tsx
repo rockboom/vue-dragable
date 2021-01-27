@@ -1,12 +1,12 @@
-import { computed, defineComponent, PropType, ref } from 'vue';
+import { computed, defineComponent, PropType, reactive, ref } from 'vue';
 import { createEvent } from './plugins/event';
 import { $$dialog } from './utils/dialog-service';
 import { useModel } from './utils/useModel';
 import { VisualEditorBlock } from './visual-editor-block';
 import "./visual-editor.scss"
-import { createNewBlock, VisualEditorBlockData, VisualEditorComponent, VisualEditorConfig, VisualEditorModelValue } from './visual-editor.utils';
+import { createNewBlock, VisualEditorBlockData, VisualEditorComponent, VisualEditorConfig, VisualEditorMarkLines, VisualEditorModelValue } from './visual-editor.utils';
 import { useVisualCommand } from './visual.command';
-import {ElMessageBox} from 'element-plus'
+import { ElMessageBox } from 'element-plus'
 
 
 export const VisualEditor = defineComponent({
@@ -40,6 +40,10 @@ export const VisualEditor = defineComponent({
                 unFocus     // 此时未选中的数据
             }
         })
+
+        const state = reactive({
+            selectBlock: null as null | VisualEditorBlockData,       // 当前选中的组件
+        });
 
         const dragstart = createEvent();
         const dragend = createEvent();
@@ -133,6 +137,7 @@ export const VisualEditor = defineComponent({
                         if (!e.shiftKey) {
                             /* 点击空白处，清空所有选中的block */
                             methods.clearFocus();
+                            state.selectBlock = null;
                         }
                     }
                 },
@@ -157,6 +162,7 @@ export const VisualEditor = defineComponent({
                                 methods.clearFocus(block);
                             }
                         }
+                        state.selectBlock = block;
                         blockDraggier.mousedown(e);
                     }
                 }
@@ -165,28 +171,64 @@ export const VisualEditor = defineComponent({
 
         /* 处理block在container中拖拽移动的相关动作 */
         const blockDraggier = (() => {
+            const mark = reactive({
+                x: null as null | number,
+                y: null as null | number
+            })
+
             let dragState = {
                 startX: 0,
                 startY: 0,
+                startLeft: 0,
+                startTop: 0,
                 startPos: [] as { left: number; top: number }[],
-                dragging: false
+                dragging: false,
+                markLines: {} as VisualEditorMarkLines
             }
 
             const mousemove = (e: MouseEvent) => {
-                let durX = e.clientX - dragState.startX;
-                let durY = e.clientY - dragState.startY;
                 if (!dragState.dragging) {
                     dragState.dragging = true;
                     dragstart.emit();
                 }
+                let { clientX: moveX, clientY: moveY } = e;
+                let { startX, startY } = dragState;
+
                 // 按住shift键，只能横向或纵向移动
-                if(e.shiftKey){
-                    if(Math.abs(durX) > Math.abs(durY)){
-                        durY = 0;
-                    }else{
-                        durX = 0;
+                if (e.shiftKey) {
+                    if (Math.abs(moveX - startX) > Math.abs(moveY - startY)) {
+                        moveX = startX;
+                    } else {
+                        moveY = startY;
                     }
                 }
+                const currentLeft = dragState.startLeft + moveX - startX;
+                const currentTop = dragState.startTop + moveY - startY;
+                const currentMark = {
+                    x: null as null | number,
+                    y: null as null | number
+                }
+                for (let i = 0; i < dragState.markLines.y.length; i++) {
+                    const { top, showTop } = dragState.markLines.y[i];
+                    if (Math.abs(top - currentTop) < 5) {
+                        moveY = top + startY - dragState.startTop;
+                        currentMark.y = showTop;
+                        break;
+                    }
+                }
+                for (let i = 0; i < dragState.markLines.x.length; i++) {
+                    const { left, showLeft } = dragState.markLines.x[i];
+                    if (Math.abs(left - currentLeft) < 5) {
+                        moveX = left + startX - dragState.startLeft;
+                        currentMark.x = showLeft;
+                        break;
+                    }
+                }
+                mark.x = currentMark.x;
+                mark.y = currentMark.y;
+
+                const durX = moveX - startX;
+                const durY = moveY - startY;
                 focusData.value.focus.forEach((block, index) => {
                     block.top = dragState.startPos[index].top + durY;
                     block.left = dragState.startPos[index].left + durX;
@@ -204,13 +246,38 @@ export const VisualEditor = defineComponent({
                 dragState = {
                     startX: e.clientX,
                     startY: e.clientY,
+                    startLeft: state.selectBlock!.left,
+                    startTop: state.selectBlock!.top,
                     startPos: focusData.value.focus.map(({ top, left }) => ({ top, left })),
-                    dragging: false
+                    dragging: false,
+                    markLines: (() => {
+                        const { focus, unFocus } = focusData.value;
+                        const { top, left, width, height } = state.selectBlock!;
+                        let lines: VisualEditorMarkLines = { x: [], y: [] };
+                        unFocus.forEach((block) => {
+                            const { top: t, left: l, width: w, height: h } = block;
+                            lines.y.push({ top: t, showTop: t });                               // 1.顶部对齐顶部
+                            lines.y.push({ top: t + h, showTop: t + h });                       // 2.顶部对齐底部
+                            lines.y.push({ top: t + h / 2 - height / 2, showTop: t + h / 2 });    // 3.中间对齐中间 垂直
+                            lines.y.push({ top: t - height, showTop: t });                      // 4.底部对齐顶部
+                            lines.y.push({ top: t + h - height, showTop: t + h });               // 5.底部对齐底部
+
+                            lines.x.push({ left: l, showLeft: l });                               // 1.左边对齐左边
+                            lines.x.push({ left: l + w, showLeft: l + w });                       // 2.左边对齐右边
+                            lines.x.push({ left: l + w / 2 - width / 2, showLeft: l + w / 2 });    // 3.中间对齐中间 水平
+                            lines.x.push({ left: l - width, showLeft: l });                      // 4.右边对齐左边
+                            lines.x.push({ left: l + w - width, showLeft: l + w });               // 5.右边对齐右边
+                        })
+                        return lines;
+                    })()
                 }
                 document.addEventListener('mousemove', mousemove);
                 document.addEventListener('mouseup', mouseup);
             }
-            return { mousedown };
+            return {
+                mark,
+                mousedown
+            };
         })();
         const commander = useVisualCommand({
             focusData,
@@ -224,9 +291,9 @@ export const VisualEditor = defineComponent({
             { label: '重做', icon: 'icon-forward', handler: commander.redo, tip: 'ctrl+shift+z' },
             {
                 label: '导入', icon: 'icon-import', handler: async () => {
-                    const text = await $$dialog.textarea('','请输入导入的JSON字符串');
+                    const text = await $$dialog.textarea('', '请输入导入的JSON字符串');
                     try {
-                        const data = JSON.parse(text ||'');
+                        const data = JSON.parse(text || '');
                         dataModel.value = data;
                     } catch (error) {
                         console.error(error);
@@ -235,10 +302,10 @@ export const VisualEditor = defineComponent({
                 }
             },
             {
-                label: '导出', 
-                icon: 'icon-export', 
+                label: '导出',
+                icon: 'icon-export',
                 handler: async () => {
-                    const text = $$dialog.textarea(JSON.stringify(dataModel.value), '导出的JSON数据',{editReadonly:true});
+                    const text = $$dialog.textarea(JSON.stringify(dataModel.value), '导出的JSON数据', { editReadonly: true });
                     console.log("text:", text);
 
                 }
@@ -300,6 +367,12 @@ export const VisualEditor = defineComponent({
                                         }
                                     />
                                 ))
+                            )}
+                            {blockDraggier.mark.y !== null && (
+                                <div class="visual-editor-mark-line-y" style={{ top: `${blockDraggier.mark.y}px` }}></div>
+                            )}
+                            {blockDraggier.mark.x !== null && (
+                                <div class="visual-editor-mark-line-x" style={{ left: `${blockDraggier.mark.x}px` }}></div>
                             )}
                         </div>
                     </div>

@@ -5,57 +5,48 @@
     },
     "blocks": [
         {
-            "top": 171,
-            "left": 302,
-            "componentKey": "text",
-            "focus": true,
-            "zIndex":0
-        },
-        {
-            "top": 100,
-            "left": 100,
-            "componentKey": "button",
-            "focus": false,
-            "zIndex": 0
-        },
-        {
-            "top": 253,
-            "left": 301,
-            "componentKey": "input",
-            "focus": false,
-            "zIndex": 0
-        },
-        {
-            "top": 106,
-            "left": 285,
+            "top": 85,
+            "left": 200,
             "componentKey": "text",
             "adjustPosition": false,
             "focus": false,
-            "zIndex": 0
+            "zIndex": 0,
+            "width": 80,
+            "height": 28,
+            "hasResize": false
         },
         {
-            "top": 171,
-            "left": 480,
+            "top": 180,
+            "left": 374,
             "componentKey": "button",
             "adjustPosition": false,
             "focus": false,
-            "zIndex": 0
+            "zIndex": 0,
+            "width": 98,
+            "height": 40,
+            "hasResize": false
         },
         {
-            "top": 312,
-            "left": 253,
+            "top": 257,
+            "left": 121,
             "componentKey": "input",
             "adjustPosition": false,
             "focus": false,
-            "zIndex": 0
+            "zIndex": 0,
+            "width": 178,
+            "height": 40,
+            "hasResize": false
         },
         {
-            "top": 250,
-            "left": 527,
+            "top": 111,
+            "left": 576,
             "componentKey": "button",
             "adjustPosition": false,
             "focus": false,
-            "zIndex": 0
+            "zIndex": 0,
+            "width": 98,
+            "height": 40,
+            "hasResize": false
         }
     ]
 }

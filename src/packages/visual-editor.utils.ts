@@ -4,7 +4,10 @@ export interface VisualEditorBlockData {
     left: number;                       // 组件的left定位
     adjustPosition: boolean;            // 是否需要调整位置
     focus: boolean;                     // 是否是选中状态
-    zIndex: number;                      // z-index值
+    zIndex: number;                     // z-index值
+    width: number;                      // 组件宽度
+    height: number;                     // 组件高度
+    hasResize: boolean;                 // 是否调整过宽度或高度
 }
 export interface VisualEditorModelValue {
     container: {
@@ -19,6 +22,11 @@ export interface VisualEditorComponent {
     label: string;
     preview: () => JSX.Element;
     render: () => JSX.Element;
+}
+
+export interface VisualEditorMarkLines {
+    x: { left: number; showLeft: number }[];
+    y: { top: number; showTop: number }[];
 }
 
 export function createNewBlock({
@@ -37,6 +45,9 @@ export function createNewBlock({
         adjustPosition: true,
         focus: false,
         zIndex: 0,
+        width: 0,
+        height: 0,
+        hasResize: false
     }
 }
 
