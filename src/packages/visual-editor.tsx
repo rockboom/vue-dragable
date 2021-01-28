@@ -8,7 +8,7 @@ import { createNewBlock, VisualEditorBlockData, VisualEditorComponent, VisualEdi
 import { useVisualCommand } from './visual.command';
 import { ElMessageBox } from 'element-plus'
 import { $$dropdown, DropdownOption } from './utils/dropdown-service';
-import { VisualOperatorEditor} from './visual-editor-operator'
+import { VisualOperatorEditor } from './visual-editor-operator'
 
 export const VisualEditor = defineComponent({
     props: {
@@ -41,9 +41,9 @@ export const VisualEditor = defineComponent({
                 unFocus     // 此时未选中的数据
             }
         })
-
+        const selectIndex = ref(-1);
         const state = reactive({
-            selectBlock: undefined as undefined | VisualEditorBlockData,       // 当前选中的组件
+            selectBlock: computed(() => (dataModel.value.blocks || [])[selectIndex.value])
         });
 
         const dragstart = createEvent();
@@ -151,12 +151,12 @@ export const VisualEditor = defineComponent({
                         if (!e.shiftKey) {
                             /* 点击空白处，清空所有选中的block */
                             methods.clearFocus();
-                            state.selectBlock = undefined;
+                            selectIndex.value = -1;
                         }
                     }
                 },
                 block: {
-                    onMousedown: (e: MouseEvent, block: VisualEditorBlockData) => {
+                    onMousedown: (e: MouseEvent, block: VisualEditorBlockData, index: number) => {
                         /* 此行导致报错：Uncaught TypeError: Cannot read property 'target' of undefined
                             因为element-ui有代码在冒泡阶段，监听全局点击事件 阻止冒泡 不能获取e.target 报错
                         */
@@ -176,7 +176,7 @@ export const VisualEditor = defineComponent({
                                 methods.clearFocus(block);
                             }
                         }
-                        state.selectBlock = block;
+                        selectIndex.value = index
                         blockDraggier.mousedown(e);
                     }
                 }
@@ -270,11 +270,11 @@ export const VisualEditor = defineComponent({
                         const { focus, unFocus } = focusData.value;
                         const { top, left, width, height } = state.selectBlock!;
                         let lines: VisualEditorMarkLines = { x: [], y: [] };
-                        [...unFocus,{
-                            top:0,
-                            left:0,
-                            width:dataModel.value.container.width,
-                            height:dataModel.value.container.height,
+                        [...unFocus, {
+                            top: 0,
+                            left: 0,
+                            width: dataModel.value.container.width,
+                            height: dataModel.value.container.height,
                         }].forEach((block) => {
                             const { top: t, left: l, width: w, height: h } = block;
                             lines.y.push({ top: t, showTop: t });                               // 1.顶部对齐顶部
@@ -383,9 +383,9 @@ export const VisualEditor = defineComponent({
                         })
                     }
                 </div>
-                <VisualOperatorEditor 
-                    block={state.selectBlock} 
-                    config={props.config} 
+                <VisualOperatorEditor
+                    block={state.selectBlock}
+                    config={props.config}
                     dataModel={dataModel}
                     updateBlock={commander.updateBlock}
                     updateModelValue={commander.updateModelValue}
@@ -405,7 +405,7 @@ export const VisualEditor = defineComponent({
                                         key={index}
                                         {
                                         ...{
-                                            onMousedown: (e: MouseEvent) => focusHandler.block.onMousedown(e, block),
+                                            onMousedown: (e: MouseEvent) => focusHandler.block.onMousedown(e, block, index),
                                             onContextmenu: (e: MouseEvent) => handler.onContextmenuBlock(e, block)
                                         }
                                         }
