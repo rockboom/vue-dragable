@@ -8,7 +8,7 @@ import { createNewBlock, VisualEditorBlockData, VisualEditorComponent, VisualEdi
 import { useVisualCommand } from './visual.command';
 import { ElMessageBox } from 'element-plus'
 import { $$dropdown, DropdownOption } from './utils/dropdown-service';
-
+import { VisualOperatorEditor} from './visual-editor-operator'
 
 export const VisualEditor = defineComponent({
     props: {
@@ -43,7 +43,7 @@ export const VisualEditor = defineComponent({
         })
 
         const state = reactive({
-            selectBlock: null as null | VisualEditorBlockData,       // 当前选中的组件
+            selectBlock: undefined as undefined | VisualEditorBlockData,       // 当前选中的组件
         });
 
         const dragstart = createEvent();
@@ -151,7 +151,7 @@ export const VisualEditor = defineComponent({
                         if (!e.shiftKey) {
                             /* 点击空白处，清空所有选中的block */
                             methods.clearFocus();
-                            state.selectBlock = null;
+                            state.selectBlock = undefined;
                         }
                     }
                 },
@@ -378,9 +378,7 @@ export const VisualEditor = defineComponent({
                         })
                     }
                 </div>
-                <div class="visual-editor-operator">
-                    visual-editor-operator
-                </div>
+                <VisualOperatorEditor block={state.selectBlock} config={props.config}/>
                 <div class="visual-editor-body">
                     <div class="visual-editor-content">
                         <div class="visual-editor-container"

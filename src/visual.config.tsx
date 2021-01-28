@@ -69,7 +69,7 @@ export type VisualEditorSelectOptions = {
 
 export function createEditorSelectProp(label: string, options: VisualEditorSelectOptions): VisualEditorProps {
     return {
-        type: VisualEditorPropsType.color,
+        type: VisualEditorPropsType.select,
         label,
         options,
     }
