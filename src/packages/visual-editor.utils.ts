@@ -1,3 +1,4 @@
+import { Prop } from "vue";
 import { VisualEditorProps } from "./visual-editor.props";
 
 export interface VisualEditorBlockData {
@@ -24,7 +25,7 @@ export interface VisualEditorComponent {
     key: string;
     label: string;
     preview: () => JSX.Element;
-    render: () => JSX.Element;
+    render: (data: { props: any }) => JSX.Element;
     props?: Record<string, VisualEditorProps>;
 }
 
@@ -62,7 +63,12 @@ export function createVisualEditorConfig() {
     return {
         componentList,
         componentMap,
-        registry: (key: string, component: Omit<VisualEditorComponent, 'key'>) => {
+        registry: <Props extends Record<string, VisualEditorProps> = {}>(key: string, component: {
+            label: string;
+            preview: () => JSX.Element;
+            render: (data: { props: { [k in keyof Props]: any } }) => JSX.Element;
+            props?: Props;
+        }) => {
             const comp = { ...component, key };
             componentList.push(comp); // 按照注册的顺序进行组件渲染
             componentMap[key] = comp;

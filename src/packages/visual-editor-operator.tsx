@@ -32,10 +32,11 @@ export const VisualOperatorEditor = defineComponent({
                     });
                 } else {
                     /* 当前编辑block数据的属性 */
-                    props.updateBlock({
+                    const newBlock = {
                         ...props.block,
                         props: state.editData,
-                    }, props.block);
+                    };
+                    props.updateBlock(newBlock, props.block);
                 }
             },
             reset: () => {
