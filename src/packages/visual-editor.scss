@@ -163,15 +163,7 @@ $primary:#409EFF;           // 主色调
                 position: relative;
                 .visual-editor-block{
                     position: absolute;
-                    &::after{
-                        $space:3px;
-                        position: absolute;
-                        top: -$space;
-                        right: -$space;
-                        bottom: -$space;
-                        left: -$space;
-                        content: '';
-                    }
+                    
                     &.visual-editor-block-focus{
                         &::after{
                             border: dashed 1px $primary;
@@ -189,6 +181,25 @@ $primary:#409EFF;           // 主色调
                     top: 0;
                     bottom: 0;
                     border-left: dashed 1px $primary;
+                }
+            }
+        }
+    }
+    &.visual-editor-editing{
+        &>.visual-editor-body{
+            .visual-editor-container{
+                border: dashed 1px $primary;
+                box-sizing: border-box;
+                .visual-editor-block{
+                    &::after {
+                        $space: 3px;
+                        position: absolute;
+                        top: -$space;
+                        right: -$space;
+                        bottom: -$space;
+                        left: -$space;
+                        content: '';
+                    }
                 }
             }
         }

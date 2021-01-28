@@ -43,8 +43,16 @@ export const VisualEditor = defineComponent({
         })
         const selectIndex = ref(-1);
         const state = reactive({
-            selectBlock: computed(() => (dataModel.value.blocks || [])[selectIndex.value])
+            selectBlock: computed(() => (dataModel.value.blocks || [])[selectIndex.value]),
+            editing:false
         });
+
+        const classes = computed(()=>[
+            'visual-editor',
+            {
+                'visual-editor-editing':state.editing
+            }
+        ])
 
         const dragstart = createEvent();
         const dragend = createEvent();
@@ -141,6 +149,7 @@ export const VisualEditor = defineComponent({
             return {
                 container: {
                     onMousedown: (e: MouseEvent) => {
+                        if (!state.editing) return;
                         /* 此行导致报错：Uncaught TypeError: Cannot read property 'target' of undefined
                             因为element-ui有代码在冒泡阶段，监听全局点击事件 阻止冒泡 不能获取e.target 报错
                         */
@@ -157,6 +166,7 @@ export const VisualEditor = defineComponent({
                 },
                 block: {
                     onMousedown: (e: MouseEvent, block: VisualEditorBlockData, index: number) => {
+                        if (!state.editing) return;
                         /* 此行导致报错：Uncaught TypeError: Cannot read property 'target' of undefined
                             因为element-ui有代码在冒泡阶段，监听全局点击事件 阻止冒泡 不能获取e.target 报错
                         */
@@ -304,6 +314,7 @@ export const VisualEditor = defineComponent({
         /* 其他的一些事件 */
         const handler = {
             onContextmenuBlock: (e: MouseEvent, block: VisualEditorBlockData) => {
+                if (!state.editing) return;
                 e.preventDefault();
                 e.stopPropagation();
                 $$dropdown({
@@ -328,6 +339,14 @@ export const VisualEditor = defineComponent({
         const buttons = [
             { label: '撤销', icon: 'icon-back', handler: commander.undo, tip: 'ctrl+z' },
             { label: '重做', icon: 'icon-forward', handler: commander.redo, tip: 'ctrl+shift+z' },
+            {
+                label:()=>state.editing ? '编辑':'预览',
+                icon: () => state.editing ? 'icon-edit' : 'icon-browse',
+                handler:()=>{
+                    if(!state.editing){methods.clearFocus()}
+                    state.editing = !state.editing;
+                }
+            },
             {
                 label: '导入', icon: 'icon-import', handler: async () => {
                     const text = await $$dialog.textarea('', '请输入导入的JSON字符串');
@@ -356,7 +375,7 @@ export const VisualEditor = defineComponent({
         ]
 
         return () => (
-            <div class="visual-editor">
+            <div class={classes.value}>
                 <div class="visual-editor-menu">
                     {props.config.componentList.map(component => (
                         <div class="visual-editor-menu-item"
@@ -372,9 +391,11 @@ export const VisualEditor = defineComponent({
                 <div class="visual-editor-head">
                     {
                         buttons.map((btn, index) => {
+                            const label = typeof btn.label === "function" ? btn.label() : btn.label
+                            const icon = typeof btn.icon === "function" ? btn.icon() : btn.icon
                             const content = (<div key={index} class="visual-editor-head-button" onClick={btn.handler}>
-                                <i class={`iconfont ${btn.icon}`}></i>
-                                <span>{btn.label}</span>
+                                <i class={`iconfont ${icon}`}></i>
+                                <span>{label}</span>
                             </div>);
 
                             return !btn.tip ? content : <el-tooltip effect="dark" content={btn.tip} placement="bottom">
