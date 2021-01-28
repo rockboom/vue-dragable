@@ -1,4 +1,4 @@
-import { computed, createApp, defineComponent, getCurrentInstance, onBeforeUnmount, onMounted, PropType, reactive, ref } from "vue";
+import { computed, createApp, defineComponent, getCurrentInstance, inject, onBeforeUnmount, onMounted, PropType, provide, reactive, ref } from "vue";
 import { defer } from "./defer";
 import './dropdown-service.scss'
 
@@ -6,6 +6,14 @@ interface DropdownServiceOption {
     reference: MouseEvent | HTMLElement;
     content: () => JSX.Element;
 }
+
+const DropdownServiceProvider = (() => {
+    const DROPDOWN_SERVICE_PROVIDER = '@@DROPDOWN_SERVICE_PROVIDER';
+    return {
+        provide: (handler: { onClick: () => void }) => provide(DROPDOWN_SERVICE_PROVIDER, handler),
+        ineject: () => inject(DROPDOWN_SERVICE_PROVIDER) as { onClick: () => void },
+    }
+})()
 
 const ServiceCompoent = defineComponent({
     props: { option: { type: Object as PropType<DropdownServiceOption>, required: true } },
@@ -18,10 +26,10 @@ const ServiceCompoent = defineComponent({
             showFlag: false,
             top: 0,
             left: 0,
-            mounted:(()=>{
+            mounted: (() => {
                 const dfd = defer();
-                onMounted(()=>{
-                    setTimeout(() => dfd.resolve(),0);
+                onMounted(() => {
+                    setTimeout(() => dfd.resolve(), 0);
                 });
                 return dfd.promise;
             })()
@@ -41,11 +49,11 @@ const ServiceCompoent = defineComponent({
             methods.show();
         }
         const methods = {
-            show:async ()=>{
+            show: async () => {
                 await state.mounted;
                 state.showFlag = true;
             },
-            hide:()=>{
+            hide: () => {
                 state.showFlag = false;
             }
         }
@@ -67,12 +75,13 @@ const ServiceCompoent = defineComponent({
             //     methods.hide();
             // }
 
-            if (!el.value.contains((e.target as HTMLDivElement))){
+            if (!el.value.contains((e.target as HTMLDivElement))) {
                 methods.hide();
             }
         }
         onMounted(() => document.body.addEventListener('mousedown', onMousedownDocument, true));
         onBeforeUnmount(() => document.body.removeEventListener('mousedown', onMousedownDocument, true))
+        DropdownServiceProvider.provide({ onClick: methods.hide });
         return () => (
             <div class={classes.value} style={styles.value} ref={el}>
                 {state.option.content()}
@@ -86,9 +95,19 @@ export const DropdownOption = defineComponent({
         label: { type: String },
         icon: { type: String },
     },
-    setup(props) {
+    emits: {
+        click: (e: MouseEvent) => true
+    },
+    setup(props, ctx) {
+        const { onClick: dropdownClickHandler } = DropdownServiceProvider.ineject();
+        const handler = {
+            onClick: (e: MouseEvent) => {
+                ctx.emit('click', e);
+                dropdownClickHandler();
+            }
+        }
         return () => (
-            <div class="dropdown-option">
+            <div class="dropdown-option" onClick={handler.onClick}>
                 <i class={`iconfont ${props.icon}`}></i>
                 <span>{props.label}</span>
             </div>
