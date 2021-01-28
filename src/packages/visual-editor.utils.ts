@@ -10,6 +10,7 @@ export interface VisualEditorBlockData {
     width: number;                      // 组件宽度
     height: number;                     // 组件高度
     hasResize: boolean;                 // 是否调整过宽度或高度
+    props: Record<string, any>;           // 组件的设计属性
 }
 export interface VisualEditorModelValue {
     container: {
@@ -50,7 +51,8 @@ export function createNewBlock({
         zIndex: 0,
         width: 0,
         height: 0,
-        hasResize: false
+        hasResize: false,
+        props: {}
     }
 }
 

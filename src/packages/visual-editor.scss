@@ -135,6 +135,11 @@ $primary:#409EFF;           // 主色调
         width: $operatorSize;
         background-color: white;
         z-index: 9;
+        padding: 20px 10px 300px 10px;
+        box-sizing: border-box;
+        .el-input, .el-select,.el-input-number{
+            width: 100%;
+        }
     }
     & > .visual-editor-body{
         padding-top: $headSize + 20;
