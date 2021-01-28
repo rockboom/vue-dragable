@@ -211,9 +211,9 @@ export const VisualEditor = defineComponent({
                 // 按住shift键，只能横向或纵向移动
                 if (e.shiftKey) {
                     if (Math.abs(moveX - startX) > Math.abs(moveY - startY)) {
-                        moveX = startX;
-                    } else {
                         moveY = startY;
+                    } else {
+                        moveX = startX;
                     }
                 }
                 const currentLeft = dragState.startLeft + moveX - startX;
@@ -270,7 +270,12 @@ export const VisualEditor = defineComponent({
                         const { focus, unFocus } = focusData.value;
                         const { top, left, width, height } = state.selectBlock!;
                         let lines: VisualEditorMarkLines = { x: [], y: [] };
-                        unFocus.forEach((block) => {
+                        [...unFocus,{
+                            top:0,
+                            left:0,
+                            width:dataModel.value.container.width,
+                            height:dataModel.value.container.height,
+                        }].forEach((block) => {
                             const { top: t, left: l, width: w, height: h } = block;
                             lines.y.push({ top: t, showTop: t });                               // 1.顶部对齐顶部
                             lines.y.push({ top: t + h, showTop: t + h });                       // 2.顶部对齐底部
