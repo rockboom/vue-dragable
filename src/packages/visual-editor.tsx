@@ -378,7 +378,13 @@ export const VisualEditor = defineComponent({
                         })
                     }
                 </div>
-                <VisualOperatorEditor block={state.selectBlock} config={props.config} dataModel={dataModel}/>
+                <VisualOperatorEditor 
+                    block={state.selectBlock} 
+                    config={props.config} 
+                    dataModel={dataModel}
+                    updateBlock={commander.updateBlock}
+                    updateModelValue={commander.updateModelValue}
+                />
                 <div class="visual-editor-body">
                     <div class="visual-editor-content">
                         <div class="visual-editor-container"

@@ -58,7 +58,7 @@ export function useVisualCommand({
             this.data = { before: null as null | VisualEditorBlockData[] }
             const handler = {
                 dragstart: () => {
-                    this.data.before = deepcopy(dataModel.value.blocks );
+                    this.data.before = deepcopy(dataModel.value.blocks);
                 },
                 dragend: () => {
                     commander.state.commands.drag();
@@ -73,7 +73,7 @@ export function useVisualCommand({
         },
         execute() {
             let before = this.data.before;
-            let after = deepcopy(dataModel.value.blocks );
+            let after = deepcopy(dataModel.value.blocks);
 
             return {
                 redo: () => {
@@ -89,7 +89,7 @@ export function useVisualCommand({
         name: 'clear',
         execute: () => {
             let data = {
-                before: deepcopy(dataModel.value.blocks ),
+                before: deepcopy(dataModel.value.blocks),
                 after: deepcopy([])
             }
 
@@ -108,40 +108,12 @@ export function useVisualCommand({
         keyboard: "ctrl+up",
         execute: () => {
             let data = {
-                before: deepcopy(dataModel.value.blocks ),
+                before: deepcopy(dataModel.value.blocks),
                 after: deepcopy((() => {
                     const { focus, unFocus } = focusData.value;
                     const maxZIndex = unFocus.reduce((pre, block) => Math.max(pre, block.zIndex), -Infinity) + 1;
                     focus.forEach(block => block.zIndex = maxZIndex);
-                    return deepcopy(dataModel.value.blocks );
-                })())
-            }
-            return {
-                redo: () => {
-                    updateBlocks(deepcopy(data.after))
-                },
-                undo: () => {
-                    updateBlocks(deepcopy(data.before))
-                 }
-            }
-        }
-    })
-    commander.registry({
-        name: "placeBottom",
-        keyboard: "ctrl+bottom",
-        execute: () => {
-            let data = {
-                before: deepcopy(dataModel.value.blocks ),
-                after: deepcopy((() => {
-                    const { focus, unFocus } = focusData.value;
-                    let minZIndex = unFocus.reduce((pre, block) => Math.min(pre, block.zIndex), Infinity) - 1;
-                    if(minZIndex < 0){
-                        const dur = Math.abs(minZIndex);
-                        unFocus.forEach(block => block.zIndex += dur);
-                        minZIndex = 0;
-                    }
-                    focus.forEach(block => block.zIndex = minZIndex);
-                    return deepcopy(dataModel.value.blocks );
+                    return deepcopy(dataModel.value.blocks);
                 })())
             }
             return {
@@ -155,16 +127,44 @@ export function useVisualCommand({
         }
     })
     commander.registry({
-        name:"updateBlock",
-        execute: (newBlock: VisualEditorBlockData, oldBlock: VisualEditorBlockData)=>{
+        name: "placeBottom",
+        keyboard: "ctrl+bottom",
+        execute: () => {
+            let data = {
+                before: deepcopy(dataModel.value.blocks),
+                after: deepcopy((() => {
+                    const { focus, unFocus } = focusData.value;
+                    let minZIndex = unFocus.reduce((pre, block) => Math.min(pre, block.zIndex), Infinity) - 1;
+                    if (minZIndex < 0) {
+                        const dur = Math.abs(minZIndex);
+                        unFocus.forEach(block => block.zIndex += dur);
+                        minZIndex = 0;
+                    }
+                    focus.forEach(block => block.zIndex = minZIndex);
+                    return deepcopy(dataModel.value.blocks);
+                })())
+            }
+            return {
+                redo: () => {
+                    updateBlocks(deepcopy(data.after))
+                },
+                undo: () => {
+                    updateBlocks(deepcopy(data.before))
+                }
+            }
+        }
+    })
+    commander.registry({
+        name: "updateBlock",
+        execute: (newBlock: VisualEditorBlockData, oldBlock: VisualEditorBlockData) => {
             let blocks = deepcopy(dataModel.value.blocks || []);
             let data = {
-                before:blocks,
-                after:(()=>{
+                before: blocks,
+                after: (() => {
                     blocks = [...blocks];
                     const index = dataModel.value.blocks!.indexOf(oldBlock);// 在原先的数据中找出oldBlock的索引
-                    if(index > -1){
-                        blocks.splice(index,1,newBlock);
+                    if (index > -1) {
+                        blocks.splice(index, 1, newBlock);
                     }
                     return deepcopy(blocks);
                 })()
@@ -179,6 +179,23 @@ export function useVisualCommand({
             }
         }
     })
+    commander.registry({
+        name: "updateModelValue",
+        execute: (val: VisualEditorModelValue) => {
+            let data = {
+                before: deepcopy(dataModel.value),
+                after: deepcopy(val)
+            }
+            return {
+                redo: () => {
+                    dataModel.value = data.after;
+                },
+                undo: () => {
+                    dataModel.value = data.before;
+                },
+            }
+        }
+    })
     commander.init();
     return {
         undo: () => commander.state.commands.undo(),
@@ -187,6 +204,7 @@ export function useVisualCommand({
         clear: () => commander.state.commands.clear(),
         placeTop: () => commander.state.commands.placeTop(),
         placeBottom: () => commander.state.commands.placeBottom(),
-        updateBlock: (newBlock: VisualEditorBlockData, oldBlock: VisualEditorBlockData) => commander.state.commands.updateBlock(newBlock, oldBlock)
+        updateBlock: (newBlock: VisualEditorBlockData, oldBlock: VisualEditorBlockData) => commander.state.commands.updateBlock(newBlock, oldBlock),
+        updateModelValue: (val: VisualEditorModelValue) => { commander.state.commands.updateModelValue(val) }
     }
 }
