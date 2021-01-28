@@ -1,4 +1,4 @@
-import { VisualEditorSelectOptions, VisualEditorTableOptions } from "@/visual.config";
+import { VisualEditorSelectOptions, VisualEditorTableOption } from "@/visual.config";
 
 export enum VisualEditorPropsType {
     input = "input",
@@ -12,5 +12,5 @@ export type VisualEditorProps = {
 } & {
     options?: VisualEditorSelectOptions;
 } & {
-    table?: VisualEditorTableOptions;
+    table?: VisualEditorTableOption;
 }

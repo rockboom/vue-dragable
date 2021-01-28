@@ -47,6 +47,31 @@
             "width": 98,
             "height": 40,
             "hasResize": false
+        },
+        {
+            "top": 14,
+            "left": 303.5,
+            "componentKey": "select",
+            "adjustPosition": false,
+            "focus": true,
+            "zIndex": 0,
+            "width": 193,
+            "height": 40,
+            "hasResize": false,
+            "props": {
+                "options": [
+                    {
+                        "label": "12",
+                        "value": "1234123",
+                        "comments": "13412"
+                    },
+                    {
+                        "label": "3456",
+                        "value": "346554",
+                        "comments": "5675"
+                    }
+                ]
+            }
         }
     ]
 }

@@ -53,10 +53,14 @@ visualConfig.registry('select', {
         })}
     </ElSelect>,
     props: {
-        options: createEditorTableProp('下拉选项', [
-            { label: '显示值', field: 'label' },
-            { label: '绑定值', field: 'value' },
-        ])
+        options: createEditorTableProp('下拉选项', {
+            options: [
+                { label: '显示值', field: 'label' },
+                { label: '绑定值', field: 'value' },
+                { label: '备注', field: 'comments' },
+            ],
+            showKey: 'label'
+        })
     },
 
 })
@@ -99,15 +103,18 @@ export function createEditorSelectProp(label: string, options: VisualEditorSelec
 }
 
 // table
-export type VisualEditorTableOptions = {
-    label: string;   // 列显示文本
-    field: string;   // 列绑定字段
-}[]
+export type VisualEditorTableOption = {
+    options: {
+        label: string;   // 列显示文本
+        field: string;   // 列绑定字段
+    }[];
+    showKey: string;
+}
 
-export function createEditorTableProp(label: string, table: VisualEditorTableOptions): VisualEditorProps {
+export function createEditorTableProp(label: string, option: VisualEditorTableOption): VisualEditorProps {
     return {
         type: VisualEditorPropsType.table,
         label,
-        table,
+        table: option,
     }
 }
