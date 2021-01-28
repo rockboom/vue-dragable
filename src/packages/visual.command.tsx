@@ -162,7 +162,7 @@ export function useVisualCommand({
                 before:blocks,
                 after:(()=>{
                     blocks = [...blocks];
-                    const index = blocks.indexOf(oldBlock)
+                    const index = dataModel.value.blocks!.indexOf(oldBlock);// 在原先的数据中找出oldBlock的索引
                     if(index > -1){
                         blocks.splice(index,1,newBlock);
                     }
