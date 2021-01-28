@@ -155,7 +155,7 @@ $primary:#409EFF;           // 主色调
             width: 100%;
             display: flex;
             justify-content: center;
-            // overflow: scroll;
+            overflow-y: auto;
             &>.visual-editor-container{
                 background-color: white;
                 flex-shrink: 0;
