@@ -23,12 +23,17 @@ visualConfig.registry('text', {
 visualConfig.registry('button', {
     label: '按钮',
     preview: () => <ElButton>按钮</ElButton>,
-    render: ({ props, size,custom}) => (
+    render: ({ props, size, custom }) => (
         <ElButton
             {...custom}
-            type={props.type} 
-            size={props.size} 
-            style={{ width: `${size.width}px`,height:`${size.height}px` }}>
+            type={props.type}
+            size={props.size}
+            style={{
+                /* 这样写是因为拖拽调整宽高，不能撤销到初始状态，
+                即第一次拖拽的数据虽然更新了，但视图没更新 */
+                width: !!size.height ? `${size.width}px` : null, 
+                height: !!size.height ? `${size.height}px` : null
+            }}>
             {props.text || '按钮'}
         </ElButton>
     ),
@@ -56,7 +61,7 @@ visualConfig.registry('button', {
 visualConfig.registry('select', {
     label: '下拉框',
     preview: () => <ElSelect />,
-    render: ({ props, model,custom }) => (
+    render: ({ props, model, custom }) => (
         <ElSelect {...custom} key={(props.options || []).map((opt: any) => opt.value).join(',')} {...model.default}>
             {(props.options || []).map((opt: { label: string; value: string }, index: string) => {
                 return (<ElOption label={opt.label} value={opt.value} key={index} />)
@@ -81,8 +86,10 @@ visualConfig.registry('select', {
 visualConfig.registry('input', {
     label: '输入框',
     preview: () => <ElInput modelValue={""} />,
-    render: ({ model, size, custom}) => {
-        return (<ElInput {...custom} {...model.default} style={{ width: `${size.width}px` }} />)
+    render: ({ model, size, custom }) => {
+        return (<ElInput {...custom} {...model.default} style={{ 
+            width: !!size.height ? `${size.width}px` : null,
+        }} />)
     },
     resize: { width: true },
     model: {
@@ -93,9 +100,13 @@ visualConfig.registry('input', {
 visualConfig.registry('number-range', {
     label: "数字范围输入框",
     resize: { width: true },
-    preview: () => <NumberRange style={{ width: '100%' }} />,
+    preview: () => <NumberRange style={{ 
+        width: '100%' 
+    }} />,
     render: ({ model, size }) => <NumberRange
-        style={{ width: `${size.width}px` }}
+        style={{ 
+            width: !!size.height ? `${size.width}px` : null,
+        }}
         {...{
             start: model.start.value,
             'onUpdate:start': model.start.onChange,
@@ -110,20 +121,20 @@ visualConfig.registry('number-range', {
 
 })
 
-visualConfig.registry('image',{
-    label:"图片",
-    resize:{width:true,height:true},
-    props:{
-        url:createEditorInputProp('地址')
+visualConfig.registry('image', {
+    label: "图片",
+    resize: { width: true, height: true },
+    props: {
+        url: createEditorInputProp('地址')
     },
-    render:({props,size})=>{
+    render: ({ props, size }) => {
         return (
-            <div style={{height:`${size.height||100}px`,width:`${size.width||100}px`}} class="visual-block-image">
+            <div style={{ height: `${size.height || 100}px`, width: `${size.width || 100}px` }} class="visual-block-image">
                 <img src={props.url || 'https://avatars.githubusercontent.com/u/23214721?s=400&u=525efab9f8487c891ab07a9f5d308e1a7a8f0097&v=4'} />
             </div>
         )
     },
-    preview:()=>{
+    preview: () => {
         return (
             <div style="text-align:center;">
                 <div style="font-size:20px;background-color:#f2f2f2;color:#ccc;display:inline-flex;width:100px;height:50px">
