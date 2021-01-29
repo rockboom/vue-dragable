@@ -48,13 +48,29 @@
             "left": 330,
             "componentKey": "select",
             "adjustPosition": false,
-            "focus": true,
+            "focus": false,
             "zIndex": 0,
             "width": 193,
             "height": 40,
             "hasResize": false,
             "props": {},
             "model": {}
+        },
+        {
+            "top": 100,
+            "left": 529.5,
+            "componentKey": "number-range",
+            "adjustPosition": false,
+            "focus": false,
+            "zIndex": 0,
+            "width": 225,
+            "height": 40,
+            "hasResize": false,
+            "props": {},
+            "model": {
+                "start": "testStart",
+                "end": "testEnd"
+            }
         }
     ]
 }
