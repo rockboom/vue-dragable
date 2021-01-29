@@ -4,11 +4,13 @@ import { $$dialog } from './utils/dialog-service';
 import { useModel } from './utils/useModel';
 import { VisualEditorBlock } from './visual-editor-block';
 import "./visual-editor.scss"
-import { createNewBlock, VisualEditorBlockData, VisualEditorComponent, VisualEditorConfig, VisualEditorMarkLines, VisualEditorModelValue } from './visual-editor.utils';
+import { createNewBlock, VisualEditorBlockData, VisualEditorComponent, VisualEditorConfig, VisualEditorMarkLines, VisualEditorModelValue, VisualProvider } from './visual-editor.utils';
 import { useVisualCommand } from './visual.command';
 import { ElMessageBox } from 'element-plus'
 import { $$dropdown, DropdownOption } from './utils/dropdown-service';
 import { VisualOperatorEditor } from './visual-editor-operator'
+
+
 
 export const VisualEditor = defineComponent({
     props: {
@@ -60,14 +62,7 @@ export const VisualEditor = defineComponent({
 
         const dragstart = createEvent();
         const dragend = createEvent();
-        dragstart.on(() => {
-            // console.log("listen drag start");
-
-        })
-        dragend.on(() => {
-            // console.log("listen end start");
-
-        })
+        VisualProvider.provide({dragstart,dragend});
 
         /* 对外暴露的一些方法 */
         const methods = {

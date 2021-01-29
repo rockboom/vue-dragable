@@ -72,7 +72,7 @@ export function useVisualCommand({
             }
         },
         execute() {
-            let before = this.data.before;
+            let before = deepcopy(this.data.before);
             let after = deepcopy(dataModel.value.blocks);
 
             return {

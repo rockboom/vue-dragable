@@ -1,4 +1,4 @@
-import { VisualEditorBlockData, VisualEditorComponent, VisualEditorConfig } from "@/packages/visual-editor.utils";
+import { VisualEditorBlockData, VisualEditorComponent, VisualProvider } from "@/packages/visual-editor.utils";
 import { defineComponent, PropType } from "vue";
 import "@/packages/visual-editor.scss"
 
@@ -14,6 +14,7 @@ export const BlockResize = defineComponent({
         component: { type: Object as PropType<VisualEditorComponent>, required: true },
     },
     setup(props, ctx) {
+        const { dragstart, dragend } = VisualProvider.inject();
         const onMousedown = (() => {
             let data = {
                 startX: 0,
@@ -22,6 +23,7 @@ export const BlockResize = defineComponent({
                 startHeight: 0,
                 startLeft: 0,
                 startTop: 0,
+                dragging:false,
                 direction: {
                     horizontal: Direction.start,
                     vertical: Direction.start
@@ -38,27 +40,32 @@ export const BlockResize = defineComponent({
                     startHeight: props.block.height,
                     startLeft: props.block.left,
                     startTop: props.block.top,
+                    dragging:false,
                     direction,
                 }
             }
             const mousemove = (e: MouseEvent) => {
-                let { startX, startY, startWidth, startHeight,direction,startLeft,startTop } = data;
+                let { startX, startY, startWidth, startHeight, direction, startLeft, startTop,dragging } = data;
+                if(!dragging){
+                    data.dragging  = true;
+                    dragstart.emit();
+                }
                 let { clientX: moveX, clientY: moveY } = e;
-                if(direction.horizontal === Direction.center){
+                if (direction.horizontal === Direction.center) {
                     moveX = startX;
                 }
-                if(direction.vertical === Direction.center){
+                if (direction.vertical === Direction.center) {
                     moveY = startY;
                 }
                 let durX = moveX - startX;
                 let durY = moveY - startY;
                 const block = props.block as VisualEditorBlockData;
 
-                if(direction.vertical === Direction.start){
+                if (direction.vertical === Direction.start) {
                     durY = -durY;
                     block.top = startTop - durY;
                 }
-                if(direction.horizontal === Direction.start){
+                if (direction.horizontal === Direction.start) {
                     durX = -durX;
                     block.left = startLeft - durX;
                 }
@@ -71,6 +78,9 @@ export const BlockResize = defineComponent({
             const mouseup = () => {
                 document.body.removeEventListener('mousemove', mousemove);
                 document.body.removeEventListener('mouseup', mouseup);
+                if(data.dragging){
+                    dragend.emit();
+                }
             }
             return mousedown;
         })()
