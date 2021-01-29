@@ -1,7 +1,13 @@
 <template>
     <div class="app">
         <h1>这是渲染页面</h1>
-        <visual-editor v-model="jsonData" :config="visualConfig" :formData="formData"/>
+        <visual-editor v-model="jsonData" :config="visualConfig" :formData="formData">
+            <template #subBtn>
+                <el-button v-if="formData.food === 'dangao'">自定义按钮</el-button>
+                <el-tag v-else>自定义标签</el-tag>
+            </template>
+        </visual-editor>
+        
         <div style="text-align:center">
             {{JSON.stringify(formData)}}
         </div>

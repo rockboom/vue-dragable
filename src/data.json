@@ -15,7 +15,8 @@
             "height": 40,
             "hasResize": false,
             "props": {},
-            "model": {}
+            "model": {},
+            "slotName": "subBtn"
         },
         {
             "top": 125,
@@ -48,13 +49,28 @@
             "left": 330,
             "componentKey": "select",
             "adjustPosition": false,
-            "focus": false,
+            "focus": true,
             "zIndex": 0,
             "width": 193,
             "height": 40,
             "hasResize": false,
-            "props": {},
-            "model": {}
+            "props": {
+                "options": [
+                    {
+                        "label": "蛋糕",
+                        "value": "dangao",
+                        "comments": "钱二分"
+                    },
+                    {
+                        "label": "雪碧",
+                        "value": "xuebi",
+                        "comments": "啊啊女"
+                    }
+                ]
+            },
+            "model": {
+                "default": "food"
+            }
         },
         {
             "top": 100,

@@ -152,7 +152,7 @@ $primary:#409EFF; // 主色调
         z-index: 9;
         padding: 20px 10px 300px 10px;
         box-sizing: border-box;
-
+        overflow-y: auto;
         .el-input,
         .el-select,
         .el-input-number {

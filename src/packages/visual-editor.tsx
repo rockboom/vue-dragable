@@ -45,9 +45,9 @@ export const VisualEditor = defineComponent({
         const selectIndex = ref(-1);
         const state = reactive({
             selectBlock: computed(() => (dataModel.value.blocks || [])[selectIndex.value]),
-            preview:false,   // 当前是否正在编辑
+            preview: false,   // 当前是否正在编辑
             // preview: true,
-            editing:true,       // 当前是否已经开启了编辑器
+            editing: true,       // 当前是否已经开启了编辑器
         });
 
         const classes = computed(() => [
@@ -94,7 +94,7 @@ export const VisualEditor = defineComponent({
                     ElMessageBox.alert('解析JSON字符串出错');
                 }
             },
-            openEdit:()=>{
+            openEdit: () => {
                 state.editing = true;
             }
         }
@@ -379,7 +379,7 @@ export const VisualEditor = defineComponent({
             { label: '删除', icon: 'icon-delete', handler: () => { commander.delete() }, tip: 'ctrl+d,backspace,delete' },
             { label: '清空', icon: 'icon-reset', handler: () => { commander.clear() } },
             {
-                label:'关闭',icon:'icon-close',handler:()=>{
+                label: '关闭', icon: 'icon-close', handler: () => {
                     methods.clearFocus();
                     state.editing = false;
                 }
@@ -395,6 +395,7 @@ export const VisualEditor = defineComponent({
                             block={block}
                             key={index}
                             formData={props.formData}
+                            slots={ctx.slots}
                         />
                     ))
                 )}
@@ -453,6 +454,7 @@ export const VisualEditor = defineComponent({
                                         block={block}
                                         key={index}
                                         formData={props.formData}
+                                        slots={ctx.slots}
                                         {
                                         ...{
                                             onMousedown: (e: MouseEvent) => focusHandler.block.onMousedown(e, block, index),
