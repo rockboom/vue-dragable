@@ -33,23 +33,38 @@
         },
         {
             "top": 241,
-            "left": 63.5,
+            "left": 529.5,
             "componentKey": "select",
             "adjustPosition": false,
-            "focus": false,
+            "focus": true,
             "zIndex": 0,
             "width": 193,
             "height": 40,
             "hasResize": false,
-            "props": {},
-            "model": {}
+            "props": {
+                "options": [
+                    {
+                        "label": "经销商",
+                        "value": "daeler",
+                        "comments": "111"
+                    },
+                    {
+                        "label": "门店",
+                        "value": "store",
+                        "comments": "222"
+                    }
+                ]
+            },
+            "model": {
+                "default": "acctType"
+            }
         },
         {
             "top": 241,
             "left": 330,
             "componentKey": "select",
             "adjustPosition": false,
-            "focus": true,
+            "focus": false,
             "zIndex": 0,
             "width": 193,
             "height": 40,
@@ -70,7 +85,8 @@
             },
             "model": {
                 "default": "food"
-            }
+            },
+            "slotName": "mySelect"
         },
         {
             "top": 100,

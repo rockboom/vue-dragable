@@ -23,8 +23,9 @@ visualConfig.registry('text', {
 visualConfig.registry('button', {
     label: '按钮',
     preview: () => <ElButton>按钮</ElButton>,
-    render: ({ props, size}) => (
-        <ElButton 
+    render: ({ props, size,custom}) => (
+        <ElButton
+            {...custom}
             type={props.type} 
             size={props.size} 
             style={{ width: `${size.width}px`,height:`${size.height}px` }}>
@@ -55,8 +56,8 @@ visualConfig.registry('button', {
 visualConfig.registry('select', {
     label: '下拉框',
     preview: () => <ElSelect />,
-    render: ({ props, model }) => (
-        <ElSelect key={(props.options || []).map((opt: any) => opt.value).join(',')} {...model.default}>
+    render: ({ props, model,custom }) => (
+        <ElSelect {...custom} key={(props.options || []).map((opt: any) => opt.value).join(',')} {...model.default}>
             {(props.options || []).map((opt: { label: string; value: string }, index: string) => {
                 return (<ElOption label={opt.label} value={opt.value} key={index} />)
             })}
@@ -80,8 +81,8 @@ visualConfig.registry('select', {
 visualConfig.registry('input', {
     label: '输入框',
     preview: () => <ElInput modelValue={""} />,
-    render: ({ model, size }) => {
-        return (<ElInput {...model.default} style={{ width: `${size.width}px` }} />)
+    render: ({ model, size, custom}) => {
+        return (<ElInput {...custom} {...model.default} style={{ width: `${size.width}px` }} />)
     },
     resize: { width: true },
     model: {
