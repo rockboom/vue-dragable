@@ -110,6 +110,30 @@ visualConfig.registry('number-range', {
 
 })
 
+visualConfig.registry('image',{
+    label:"图片",
+    resize:{width:true,height:true},
+    props:{
+        url:createEditorInputProp('地址')
+    },
+    render:({props,size})=>{
+        return (
+            <div style={{height:`${size.height||100}px`,width:`${size.width||100}px`}} class="visual-block-image">
+                <img src={props.url || 'https://avatars.githubusercontent.com/u/23214721?s=400&u=525efab9f8487c891ab07a9f5d308e1a7a8f0097&v=4'} />
+            </div>
+        )
+    },
+    preview:()=>{
+        return (
+            <div style="text-align:center;">
+                <div style="font-size:20px;background-color:#f2f2f2;color:#ccc;display:inline-flex;width:100px;height:50px">
+                    <i class="el-icon-picture"></i>
+                </div>
+            </div>
+        )
+    }
+})
+
 
 // input
 export function createEditorInputProp(label: string): VisualEditorProps {
