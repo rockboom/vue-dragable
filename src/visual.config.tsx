@@ -47,11 +47,13 @@ visualConfig.registry('button', {
 visualConfig.registry('select', {
     label: '下拉框',
     preview: () => <ElSelect />,
-    render: ({ props }) => <ElSelect key={(props.options || []).map((opt: any) => opt.value).join(',')}>
-        {(props.options || []).map((opt: { label: string; value: string }, index: string) => {
-            return (<ElOption label={opt.label} value={opt.value} key={index} />)
-        })}
-    </ElSelect>,
+    render: ({ props,model }) => (
+        <ElSelect key={(props.options || []).map((opt: any) => opt.value).join(',')} {...model.default}>
+            {(props.options || []).map((opt: { label: string; value: string }, index: string) => {
+                return (<ElOption label={opt.label} value={opt.value} key={index} />)
+            })}
+        </ElSelect>
+    ),
     props: {
         options: createEditorTableProp('下拉选项', {
             options: [
@@ -62,7 +64,9 @@ visualConfig.registry('select', {
             showKey: 'label'
         })
     },
-
+    model: {
+        default: '绑定字段'
+    }
 })
 
 visualConfig.registry('input', {
