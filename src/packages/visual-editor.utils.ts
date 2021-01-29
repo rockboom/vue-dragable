@@ -26,9 +26,14 @@ export interface VisualEditorComponent {
     key: string;
     label: string;
     preview: () => JSX.Element;
-    render: (data: { props: any; model: any }) => JSX.Element;
+    render: (data: {
+        props: any;
+        model: any;
+        size: { width?: number; height?: number };
+    }) => JSX.Element;
     props?: Record<string, VisualEditorProps>;
     model?: Record<string, string>;
+    resize?: { width?: boolean; height?: boolean };
 }
 
 export interface VisualEditorMarkLines {
@@ -74,10 +79,12 @@ export function createVisualEditorConfig() {
             preview: () => JSX.Element;
             render: (data: {
                 props: { [k in keyof Props]: any };
-                model: Partial<{[k in keyof Model]: any}>;
+                model: Partial<{ [k in keyof Model]: any }>;
+                size: { width?: number; height?: number };
             }) => JSX.Element;
             props?: Props;
             model?: Model;
+            resize?: { width?: boolean; height?: boolean };
         }) => {
             const comp = { ...component, key };
             componentList.push(comp); // 按照注册的顺序进行组件渲染

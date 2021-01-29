@@ -1,4 +1,5 @@
 import { computed, defineComponent, onMounted, PropType, ref } from "vue";
+import { BlockResize } from "./components/block-resizer/block-resize";
 import { VisualEditorBlockData, VisualEditorConfig } from "./visual-editor.utils";
 
 export const VisualEditorBlock = defineComponent({
@@ -36,13 +37,17 @@ export const VisualEditorBlock = defineComponent({
         });
         return () => {
             const component = props.config.componentMap[props.block.componentKey];
-            const formData = props.formData as Record<string,any>;
+            const formData = props.formData as Record<string, any>;
             const Render = component.render({
+                size: props.block.hasResize ? {
+                    width: props.block.width,
+                    height: props.block.height,
+                } : {},
                 props: props.block.props || {},
                 model: Object.keys(component.model || {}).reduce((prev, propName) => {
                     const modelName = !props.block.model ? null : props.block.model[propName];
                     prev[propName] = {
-                        [propName === 'default' ? 'modelValue' : propName]: !!modelName ? formData[modelName]:null,
+                        [propName === 'default' ? 'modelValue' : propName]: !!modelName ? formData[modelName] : null,
                         [propName === 'default' ? 'onUpdate:modelValue' : 'onChange']: (val: any) => {
                             return !!modelName && (formData[modelName] = val);
                         },
@@ -50,9 +55,11 @@ export const VisualEditorBlock = defineComponent({
                     return prev;
                 }, {} as Record<string, any>),
             });
+            const { width, height } = component.resize || {};
             return (
                 <div class={classes.value} style={styles.value} ref={el}>
                     {Render}
+                    {!!props.block.focus && (!!width || !!height) && <BlockResize block={props.block} component={component} />}
                 </div>
             )
         }
