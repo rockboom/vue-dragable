@@ -51,12 +51,15 @@ const ServiceCompoent = defineComponent({
         }
 
         const handler = {
-            onConfirm:()=>{
+            onConfirm: () => {
                 state.option.onConfirm(state.editData);
                 methods.hide();
             },
-            onCancel:()=>{
+            onCancel: () => {
                 methods.hide();
+            },
+            onDelete: (index: number) => {
+                state.editData.splice(index,1);
             }
         }
 
@@ -81,7 +84,12 @@ const ServiceCompoent = defineComponent({
                                 </ElTableColumn>
                             ))}
                             <ElTableColumn  {...{ label: "操作栏" } as any}>
-                                <ElButton type="danger">删除</ElButton>
+                                {{
+                                    default: ({ $index }: { $index: number }) => (
+                                        <ElButton type="danger" {...{ onClick: () => handler.onDelete($index) }}>删除</ElButton>
+
+                                    )
+                                }}
                             </ElTableColumn>
                         </ElTable>
                     </div>
