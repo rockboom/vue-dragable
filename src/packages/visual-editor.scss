@@ -156,33 +156,7 @@ $primary:#409EFF;           // 主色调
             display: flex;
             justify-content: center;
             overflow-y: auto;
-            &>.visual-editor-container{
-                background-color: white;
-                flex-shrink: 0;
-                flex-grow: 0;
-                position: relative;
-                .visual-editor-block{
-                    position: absolute;
-                    
-                    &.visual-editor-block-focus{
-                        &::after{
-                            border: dashed 1px $primary;
-                        }
-                    }
-                }
-                .visual-editor-mark-line-y{
-                    position: absolute;
-                    left: 0;
-                    right: 0;
-                    border-top: dashed 1px $primary;
-                }
-                .visual-editor-mark-line-x {
-                    position: absolute;
-                    top: 0;
-                    bottom: 0;
-                    border-left: dashed 1px $primary;
-                }
-            }
+            
         }
     }
     &.visual-editor-not-preview{
@@ -203,5 +177,52 @@ $primary:#409EFF;           // 主色调
                 }
             }
         }
+    }
+}
+
+.visual-editor-container {
+    background-color: white;
+    flex-shrink: 0;
+    flex-grow: 0;
+    position: relative;
+
+    .visual-editor-block {
+        position: absolute;
+
+        &.visual-editor-block-focus {
+            &::after {
+                border: dashed 1px $primary;
+            }
+        }
+    }
+
+    .visual-editor-mark-line-y {
+        position: absolute;
+        left: 0;
+        right: 0;
+        border-top: dashed 1px $primary;
+    }
+
+    .visual-editor-mark-line-x {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        border-left: dashed 1px $primary;
+    }
+}
+
+.vue-visual-container-edit-button{
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    border: solid 2px $ibc;
+    color: $itc;
+    padding: 5px 12px;
+    cursor: pointer;
+    .iconfont{
+        color: $itc;
+    }
+    &:hover{
+        background-color: #f2f2f2;
     }
 }

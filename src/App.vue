@@ -2,6 +2,9 @@
     <div class="app">
         <h1>这是渲染页面</h1>
         <visual-editor v-model="jsonData" :config="visualConfig" :formData="formData"/>
+        <div style="text-align:center">
+            {{JSON.stringify(formData)}}
+        </div>
     </div>
 </template>
 
@@ -29,4 +32,11 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+    html,body{
+        margin: 0;
+        border: 0;
+    }
+    .app{
+        padding-bottom: 300px;
+    }
 </style>
