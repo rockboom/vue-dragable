@@ -67,9 +67,9 @@ const ServiceComponent = defineComponent({
                             {
                                 state.option.editType === DialogServiceEditType.textarea ?
                                     (
-                                        <ElInput type="textarea" {...{ row: 10 }} v-model={state.editValue} />
+                                        <ElInput type="textarea" {...{ rows: 10 }} v-model={state.editValue} />
                                     ) : (
-                                        <ElInput {...{ row: 10 }} v-model={state.editValue} />
+                                        <ElInput {...{ rows: 10 }} v-model={state.editValue} />
                                     )
                             }
                         </div>

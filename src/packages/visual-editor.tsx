@@ -13,7 +13,8 @@ import { VisualOperatorEditor } from './visual-editor-operator'
 export const VisualEditor = defineComponent({
     props: {
         modelValue: { type: Object as PropType<VisualEditorModelValue>, required: true },
-        config: { type: Object as PropType<VisualEditorConfig>, required: true }
+        config: { type: Object as PropType<VisualEditorConfig>, required: true },
+        formData: { type: Object as PropType<Record<string, any>>, required: true }
     },
     emits: {
         'update:modelValue': (val?: VisualEditorModelValue) => true,
@@ -44,13 +45,14 @@ export const VisualEditor = defineComponent({
         const selectIndex = ref(-1);
         const state = reactive({
             selectBlock: computed(() => (dataModel.value.blocks || [])[selectIndex.value]),
-            editing:false
+            // editing:false,
+            editing: true,
         });
 
-        const classes = computed(()=>[
+        const classes = computed(() => [
             'visual-editor',
             {
-                'visual-editor-editing':state.editing
+                'visual-editor-editing': state.editing
             }
         ])
 
@@ -340,10 +342,10 @@ export const VisualEditor = defineComponent({
             { label: '撤销', icon: 'icon-back', handler: commander.undo, tip: 'ctrl+z' },
             { label: '重做', icon: 'icon-forward', handler: commander.redo, tip: 'ctrl+shift+z' },
             {
-                label:()=>state.editing ? '编辑':'预览',
-                icon: () => state.editing ? 'icon-edit' : 'icon-browse',
-                handler:()=>{
-                    if(!state.editing){methods.clearFocus()}
+                label: () => !state.editing ? '编辑' : '预览',
+                icon: () => !state.editing ? 'icon-edit' : 'icon-browse',
+                handler: () => {
+                    if (!state.editing) { methods.clearFocus() }
                     state.editing = !state.editing;
                 }
             },
@@ -424,6 +426,7 @@ export const VisualEditor = defineComponent({
                                         config={props.config}
                                         block={block}
                                         key={index}
+                                        formData={props.formData}
                                         {
                                         ...{
                                             onMousedown: (e: MouseEvent) => focusHandler.block.onMousedown(e, block, index),

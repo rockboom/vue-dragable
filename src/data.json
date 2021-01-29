@@ -5,52 +5,47 @@
     },
     "blocks": [
         {
-            "top": 85,
-            "left": 200,
+            "top": 47,
+            "left": 330,
+            "componentKey": "button",
+            "adjustPosition": false,
+            "focus": false,
+            "zIndex": 0,
+            "width": 70,
+            "height": 40,
+            "hasResize": false,
+            "props": {},
+            "model": {}
+        },
+        {
+            "top": 125,
+            "left": 115,
             "componentKey": "text",
             "adjustPosition": false,
             "focus": false,
             "zIndex": 0,
             "width": 80,
             "height": 28,
-            "hasResize": false
+            "hasResize": false,
+            "props": {},
+            "model": {}
         },
         {
-            "top": 180,
-            "left": 374,
-            "componentKey": "button",
+            "top": 241,
+            "left": 63.5,
+            "componentKey": "select",
             "adjustPosition": false,
             "focus": false,
             "zIndex": 0,
-            "width": 98,
+            "width": 193,
             "height": 40,
-            "hasResize": false
+            "hasResize": false,
+            "props": {},
+            "model": {}
         },
         {
-            "top": 257,
-            "left": 121,
-            "componentKey": "input",
-            "adjustPosition": false,
-            "focus": false,
-            "zIndex": 0,
-            "width": 178,
-            "height": 40,
-            "hasResize": false
-        },
-        {
-            "top": 111,
-            "left": 576,
-            "componentKey": "button",
-            "adjustPosition": false,
-            "focus": false,
-            "zIndex": 0,
-            "width": 98,
-            "height": 40,
-            "hasResize": false
-        },
-        {
-            "top": 14,
-            "left": 303.5,
+            "top": 241,
+            "left": 330,
             "componentKey": "select",
             "adjustPosition": false,
             "focus": true,
@@ -58,20 +53,8 @@
             "width": 193,
             "height": 40,
             "hasResize": false,
-            "props": {
-                "options": [
-                    {
-                        "label": "12",
-                        "value": "1234123",
-                        "comments": "13412"
-                    },
-                    {
-                        "label": "3456",
-                        "value": "346554",
-                        "comments": "5675"
-                    }
-                ]
-            }
+            "props": {},
+            "model": {}
         }
     ]
 }
