@@ -45,14 +45,14 @@ export const VisualEditor = defineComponent({
         const selectIndex = ref(-1);
         const state = reactive({
             selectBlock: computed(() => (dataModel.value.blocks || [])[selectIndex.value]),
-            // editing:false,
-            editing: true,
+            // preview:false,   // 当前是否正在编辑
+            preview: true,
         });
 
         const classes = computed(() => [
             'visual-editor',
             {
-                'visual-editor-editing': state.editing
+                'visual-editor-not-preview': !state.preview
             }
         ])
 
@@ -151,7 +151,7 @@ export const VisualEditor = defineComponent({
             return {
                 container: {
                     onMousedown: (e: MouseEvent) => {
-                        if (!state.editing) return;
+                        if (state.preview) return;
                         /* 此行导致报错：Uncaught TypeError: Cannot read property 'target' of undefined
                             因为element-ui有代码在冒泡阶段，监听全局点击事件 阻止冒泡 不能获取e.target 报错
                         */
@@ -168,7 +168,7 @@ export const VisualEditor = defineComponent({
                 },
                 block: {
                     onMousedown: (e: MouseEvent, block: VisualEditorBlockData, index: number) => {
-                        if (!state.editing) return;
+                        if (state.preview) return;
                         /* 此行导致报错：Uncaught TypeError: Cannot read property 'target' of undefined
                             因为element-ui有代码在冒泡阶段，监听全局点击事件 阻止冒泡 不能获取e.target 报错
                         */
@@ -316,7 +316,7 @@ export const VisualEditor = defineComponent({
         /* 其他的一些事件 */
         const handler = {
             onContextmenuBlock: (e: MouseEvent, block: VisualEditorBlockData) => {
-                if (!state.editing) return;
+                if (state.preview) return;
                 e.preventDefault();
                 e.stopPropagation();
                 $$dropdown({
@@ -342,11 +342,11 @@ export const VisualEditor = defineComponent({
             { label: '撤销', icon: 'icon-back', handler: commander.undo, tip: 'ctrl+z' },
             { label: '重做', icon: 'icon-forward', handler: commander.redo, tip: 'ctrl+shift+z' },
             {
-                label: () => !state.editing ? '编辑' : '预览',
-                icon: () => !state.editing ? 'icon-edit' : 'icon-browse',
+                label: () => state.preview ? '编辑' : '预览',
+                icon: () => state.preview ? 'icon-edit' : 'icon-browse',
                 handler: () => {
-                    if (!state.editing) { methods.clearFocus() }
-                    state.editing = !state.editing;
+                    if (!state.preview) { methods.clearFocus() }
+                    state.preview = !state.preview;
                 }
             },
             {
@@ -376,7 +376,19 @@ export const VisualEditor = defineComponent({
             { label: '清空', icon: 'icon-reset', handler: () => { commander.clear() } },
         ]
 
-        return () => (
+        return () => <>
+            <div class="visual-editor-container" style={containerStyle.value}>
+                {!!dataModel.value.blocks && (
+                    dataModel.value.blocks.map((block, index) => (
+                        <VisualEditorBlock
+                            config={props.config}
+                            block={block}
+                            key={index}
+                            formData={props.formData}
+                        />
+                    ))
+                )}
+            </div>
             <div class={classes.value}>
                 <div class="visual-editor-menu">
                     {props.config.componentList.map(component => (
@@ -445,6 +457,7 @@ export const VisualEditor = defineComponent({
                         </div>
                     </div>
                 </div>
-            </div>)
+            </div>
+        </>
     }
 });

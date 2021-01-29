@@ -48,8 +48,6 @@ export const VisualOperatorEditor = defineComponent({
             methods.reset();
         }, { immediate: true })
         const renderEditor = (propName: string, propConfig: VisualEditorProps) => {
-            console.log("operator:",propName,propConfig);
-            
             return {
                 [VisualEditorPropsType.input]: () => (<ElInput v-model={state.editData.props[propName]} />),
                 [VisualEditorPropsType.color]: () => (<ElColorPicker v-model={state.editData.props[propName]} />),

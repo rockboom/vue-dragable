@@ -185,7 +185,7 @@ $primary:#409EFF;           // 主色调
             }
         }
     }
-    &.visual-editor-editing{
+    &.visual-editor-not-preview{
         &>.visual-editor-body{
             .visual-editor-container{
                 border: dashed 1px $primary;
