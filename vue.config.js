@@ -1,4 +1,4 @@
 module.exports = {
-    outputDir:'docs',
-    publicPath:'/vue-dragable/'
+    outputDir: 'docs',
+    publicPath: '/vue-dragable/'
 }
